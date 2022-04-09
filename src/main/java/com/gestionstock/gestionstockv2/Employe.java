@@ -175,7 +175,8 @@ public class Employe implements Initializable {
 
     //------------------------ AJOUTER -------------------------------
     @FXML
-    void ajoutClick(ActionEvent event) {
+    void ajoutClick(ActionEvent event)
+    {
 
         String nom,prenom,adresse,mail,post,password,salaire;
         nom = nomEmp.getText().trim();
@@ -251,7 +252,8 @@ public class Employe implements Initializable {
 
     //------------------------ MODIFER-------------------------
     @FXML
-    void modClick(ActionEvent event) {
+    void modClick(ActionEvent event)
+    {
         String id=inputEmp.getText();
         if(ChampsIdEstInt(id)==false || IdExist(id)==false)
         {
@@ -287,7 +289,7 @@ public class Employe implements Initializable {
 
                     if(rs.getString("post").equals("ADMIN"))
                     {
-                        PostEmp.getSelectionModel().select(3);
+                        PostEmp.getSelectionModel().select(2);
                     }
                 }
             }
@@ -300,7 +302,8 @@ public class Employe implements Initializable {
 
     //----------------------- CONFIRMER MODIFER -------------------------------
     @FXML
-    void confClick(ActionEvent event) {
+    void confClick(ActionEvent event)
+    {
         String nom,prenom,adresse,mail,post,password,salaire,idconf;
         nom = nomEmp.getText().trim();
         idconf = inputEmp.getText().trim();
@@ -363,7 +366,8 @@ public class Employe implements Initializable {
 
     //----------------------------------- SUPPRIMER ---------------------------------------
     @FXML
-    void suppClick(ActionEvent event) {
+    void suppClick(ActionEvent event)
+    {
         String id=inputEmp.getText();
         if(ChampsIdEstInt(id)==false || IdExist(id)==false)
         {
@@ -458,7 +462,8 @@ public class Employe implements Initializable {
 
     //----------------------- Rechercher---------------------------
     @FXML
-    void rechClick(ActionEvent event) {
+    void rechClick(ActionEvent event)
+    {
         String rech = inputEmp.getText().trim();
         if(rech.equals(""))
         {
@@ -492,7 +497,7 @@ public class Employe implements Initializable {
             else
             {
                 String rqt = "select idemp,nom,prenom,adresse,mail,salaire,post from employe where nom like '"+rech+"%'" +
-                        "or prenom like '"+rech+"%' or adresse like '"+rech+"%' or post like '"+rech+"%' GROUP BY etat HAVING etat = 0";
+                        "or prenom like '"+rech+"%' or adresse like '"+rech+"%' or post like '"+rech+"%' HAVING etat = 0";
                 ObservableList<Emp> list = getEmployees(rqt);
                 IDcol.setCellValueFactory(new PropertyValueFactory<Emp,Integer>("id"));
                 NOMcol.setCellValueFactory(new PropertyValueFactory<Emp,String>("nom"));
@@ -514,7 +519,8 @@ public class Employe implements Initializable {
 
 
     @FXML
-    void backClick(ActionEvent event) {
+    void backClick(ActionEvent event)
+    {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("inter.fxml"));
             root = loader.load();
@@ -531,7 +537,8 @@ public class Employe implements Initializable {
     }
 
     @FXML
-    void decClick(ActionEvent event) {
+    void decClick(ActionEvent event)
+    {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
             root = loader.load();
@@ -552,7 +559,8 @@ public class Employe implements Initializable {
 
 
     //------------------------- alert message ---------------------
-    private void Message(String msg) {
+    private void Message(String msg)
+    {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setHeaderText(null);
         alert.setContentText(msg);

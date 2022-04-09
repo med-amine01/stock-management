@@ -44,31 +44,6 @@ public class Inter {
 
 
     @FXML
-    void FourClick(ActionEvent event) {
-
-    }
-
-    @FXML
-    void clientClick(ActionEvent event) {
-
-    }
-
-    @FXML
-    void decClick(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
-            root = loader.load();
-            stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
-            scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-
-        }catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
     void empClick(ActionEvent event)  {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("employe.fxml"));
@@ -86,19 +61,65 @@ public class Inter {
     }
 
     @FXML
-    void entreeClick(ActionEvent event) {
+    void pieceClick(ActionEvent event) {
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("piece.fxml"));
+            root = loader.load();
+            Piece piece = loader.getController();
+            piece.PrintUserName(user.getText());
+            stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
     @FXML
-    void pieceClick(ActionEvent event) {
+    void FourClick(ActionEvent event) {
 
     }
+
+    @FXML
+    void clientClick(ActionEvent event) {
+
+    }
+
+    @FXML
+    void entreeClick(ActionEvent event) {
+
+    }
+
+
 
     @FXML
     void sortieClick(ActionEvent event) {
 
     }
+
+    @FXML
+    void decClick(ActionEvent event)
+    {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
+            root = loader.load();
+            stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
 
     public void PrintAdminName(String CurrentUserName)
     {
