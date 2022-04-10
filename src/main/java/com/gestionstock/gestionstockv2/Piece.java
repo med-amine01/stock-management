@@ -41,48 +41,19 @@ public class Piece implements Initializable {
 
 
     @FXML
-    private Button ajoutBtn;
-
-    @FXML
-    private Button backBtn;
-
-    @FXML
-    private Button confBtn;
-
-    @FXML
-    private Button dec;
-
-
-    @FXML
     private ComboBox<Integer> idfourp;
-
     @FXML
     private TextField inputpiece;
-
     @FXML
     private TextField marquepiece;
-
-    @FXML
-    private Button modBtn;
-
     @FXML
     private TextField modelepiece;
-
     @FXML
     private TextField prixunitairep;
-
     @FXML
     private TextField quantitepiece;
-
-    @FXML
-    private Button rechBtn;
-
     @FXML
     private TextField seriepiece;
-
-    @FXML
-    private Button suppBtn;
-
     @FXML
     private Label user;
 
@@ -92,13 +63,14 @@ public class Piece implements Initializable {
     private Parent root;
 
     Connection con;
-    PreparedStatement pst,pst1;
+    PreparedStatement pst;
+    ObservableList<Pie> list;
 
     //------------------ LOAD ON OPEN ---------------------------
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
-        Actualiser();
+        list = getPieces();
+        Actualiser(list);
         setListeDeroulante();
     }
 
@@ -108,7 +80,6 @@ public class Piece implements Initializable {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection("jdbc:mysql://localhost/gestionstock", "root","");
-            System.out.println("Connecté !!");
 
         }
         catch (ClassNotFoundException ex)
@@ -129,14 +100,16 @@ public class Piece implements Initializable {
         connect();
         try
         {
-            pst = con.prepareStatement("select idpiece,marque,modele,serie,qte,prixunitaire,idfour from piece where etat = 0");
+            pst = con.prepareStatement("select idpiece,marque,modele,serie,qte,prixunitaire,idfour,etat from piece where etat = 0");
             ResultSet rs = pst.executeQuery();
             Pie pieces;
 
             while (rs.next())
             {
-                pieces = new Pie(rs.getInt("idpiece"), rs.getString("marque"), rs.getString("modele"),rs.getString("serie"),
-                        rs.getInt("qte"),rs.getDouble("prixunitaire"),rs.getInt("idfour"));
+                pieces = new Pie(rs.getInt("idpiece"), rs.getString("marque"),
+                        rs.getString("modele"),rs.getString("serie"),
+                        rs.getInt("qte"),rs.getDouble("prixunitaire"),
+                        rs.getInt("idfour"),rs.getString("etat"));
                 piceList.add(pieces);
             }
         }
@@ -147,6 +120,7 @@ public class Piece implements Initializable {
 
         return piceList;
     }
+
     //---------------------- chargement du tableau dans une liste (Search)-----------------------------
     public ObservableList<Pie> getPieces(String sqlSearch)
     {
@@ -160,8 +134,10 @@ public class Piece implements Initializable {
 
             while (rs.next())
             {
-                pieces = new Pie(rs.getInt("idpiece"), rs.getString("marque"), rs.getString("modele"),rs.getString("serie"),
-                        rs.getInt("qte"),rs.getDouble("prixunitaire"),rs.getInt("idfour"));
+                pieces = new Pie(rs.getInt("idpiece"), rs.getString("marque"),
+                        rs.getString("modele"),rs.getString("serie"),
+                        rs.getInt("qte"),rs.getDouble("prixunitaire"),
+                        rs.getInt("idfour"),rs.getString("etat"));
                 piceList.add(pieces);
             }
         }
@@ -174,9 +150,8 @@ public class Piece implements Initializable {
     }
 
     //---------------------------- ACTUALISER -----------------------------
-    public void Actualiser()
+    public void Actualiser(ObservableList<Pie> list)
     {
-        ObservableList<Pie> list = getPieces();
         IDcol.setCellValueFactory(new PropertyValueFactory<Pie,Integer>("idpiece"));
         MARcol.setCellValueFactory(new PropertyValueFactory<Pie,String>("marque"));
         MODcol.setCellValueFactory(new PropertyValueFactory<Pie,String>("modele"));
@@ -208,7 +183,7 @@ public class Piece implements Initializable {
         }
         else
         {
-            if(ChampsIdEstInt(qte)==false)
+            if(!ChampsIdEstInt(qte))
             {
                 Message("quantité invalide");
                 quantitepiece.setText("");
@@ -216,7 +191,7 @@ public class Piece implements Initializable {
             }
             else
             {
-                if(QteSupOuEgaleZero(qte) == false)
+                if(!QteSupOuEgaleZero(qte))
                 {
                     Message("quantité invalide");
                     quantitepiece.setText("");
@@ -224,7 +199,7 @@ public class Piece implements Initializable {
                 }
                 else
                 {
-                    if(ChampPrixEstDouble(prixunitaire)==false)
+                    if(!ChampPrixEstDouble(prixunitaire))
                     {
                         Message("prix unitaire invalide !!");
                         prixunitairep.setText("");
@@ -232,7 +207,7 @@ public class Piece implements Initializable {
                     }
                     else
                     {
-                        if(PrixSupZero(prixunitaire) == false)
+                        if(!PrixSupZero(prixunitaire))
                         {
                             Message("prix unitaire invalide !!");
                             prixunitairep.setText("");
@@ -263,7 +238,8 @@ public class Piece implements Initializable {
 
                                         pst.executeUpdate();
                                         Message("pièce Ajoutée !!");
-                                        Actualiser();
+                                        list = getPieces();
+                                        Actualiser(list);
                                         marquepiece.setText("");
                                         modelepiece.setText("");
                                         seriepiece.setText("");
@@ -291,7 +267,6 @@ public class Piece implements Initializable {
         }
     }
 
-
     //---------------------- RECHERCHER --------------------
     @FXML
     void rechClick(ActionEvent event)
@@ -299,94 +274,65 @@ public class Piece implements Initializable {
         String rech = inputpiece.getText().trim();
         if(rech.equals(""))
         {
-            Actualiser();
+            list = getPieces();
+            Actualiser(list);
         }
         else
         {
-            if(ChampsIdEstInt(rech)== true) //3RAFNA ELI HOA YFARKESS BEL ID
+            if(ChampsIdEstInt(rech)) //3RAFNA ELI HOA YFARKESS BEL ID
             {
-                if(IdExist(rech)==false)
+                String rqt = "select * from piece where etat = 0 and idpiece = "+rech;
+                list = getPieces(rqt);
+
+                if(list.isEmpty())
                 {
-                    Message("ID n'existe pas !!");
+                    Message("ID <"+rech+"> n'existe pas !!");
                     inputpiece.setText("");
                     inputpiece.requestFocus();
                 }
                 else
                 {
-
-                    String rqt = "select idpiece,marque,modele,serie,qte,prixunitaire,idfour from piece where etat = 0 and idpiece = "+rech;
-                    ObservableList<Pie> list = getPieces(rqt);
-                    IDcol.setCellValueFactory(new PropertyValueFactory<Pie,Integer>("idpiece"));
-                    MARcol.setCellValueFactory(new PropertyValueFactory<Pie,String>("marque"));
-                    MODcol.setCellValueFactory(new PropertyValueFactory<Pie,String>("modele"));
-                    SERcol.setCellValueFactory(new PropertyValueFactory<Pie,String>("serie"));
-                    QTEcol.setCellValueFactory(new PropertyValueFactory<Pie,Integer>("qte"));
-                    PRIXcol.setCellValueFactory(new PropertyValueFactory<Pie,Double>("prix"));
-                    FOURcol.setCellValueFactory(new PropertyValueFactory<Pie,Integer>("idfour"));
-                    table.setItems(list);
+                    Actualiser(list);
                 }
             }
             else
             {
-                String rqt = "select idpiece,marque,modele,serie,qte,prixunitaire,idfour from piece where marque like '"+rech+"%'" +
+                String rqt = "select * from piece where marque like '"+rech+"%'" +
                         "or modele like '"+rech+"%' or serie like '"+rech+"%' HAVING etat = 0";
-                ObservableList<Pie> list = getPieces(rqt);
-                IDcol.setCellValueFactory(new PropertyValueFactory<Pie,Integer>("idpiece"));
-                MARcol.setCellValueFactory(new PropertyValueFactory<Pie,String>("marque"));
-                MODcol.setCellValueFactory(new PropertyValueFactory<Pie,String>("modele"));
-                SERcol.setCellValueFactory(new PropertyValueFactory<Pie,String>("serie"));
-                QTEcol.setCellValueFactory(new PropertyValueFactory<Pie,Integer>("qte"));
-                PRIXcol.setCellValueFactory(new PropertyValueFactory<Pie,Double>("prix"));
-                FOURcol.setCellValueFactory(new PropertyValueFactory<Pie,Integer>("idfour"));
-                table.setItems(list);
+                list = getPieces(rqt);
+                if(list.isEmpty())
+                {
+                    Message("<"+rech+"> n'existe pas !");
+                    inputpiece.setText("");
+                    inputpiece.requestFocus();
+                }
+                else
+                {
+                    Actualiser(list);
+                }
             }
         }
     }
 
-    //-------------------------- MODIFIER --------------------
-    @FXML
-    void modClick(ActionEvent event)
+    //--------------------- SELECT ROW DISPLAY ON TEXT FIELDS -----------------
+    public void ligneClick(javafx.scene.input.MouseEvent mouseEvent)
     {
-        String id=inputpiece.getText();
-        if(ChampsIdEstInt(id)==false || IdExist(id)==false)
-        {
-            Message("Impossible De Modifier (id invalide)");
-            inputpiece.setText("");
-            inputpiece.requestFocus();
-        }
-        else
-        {
+        Pie piece = table.getSelectionModel().getSelectedItem();
+        marquepiece.setText(piece.getMarque());
+        modelepiece.setText(piece.getModele());
+        seriepiece.setText(piece.getSerie());
+        prixunitairep.setText(String.valueOf(piece.getPrix()));
+        quantitepiece.setText(String.valueOf(piece.getQte()));
+        idfourp.getSelectionModel().select(indexInListFournisseur(String.valueOf(piece.getIdfour())));
 
-            try
-            {
-                pst = con.prepareStatement("select marque,modele,serie,qte,prixunitaire,idfour from piece where idpiece = "+id+";");
-                ResultSet rs = pst.executeQuery();
-
-                while(rs.next())
-                {
-                    marquepiece.setText(rs.getString("marque"));
-                    modelepiece.setText(rs.getString("modele"));
-                    seriepiece.setText(rs.getString("serie"));
-                    quantitepiece.setText(rs.getString("qte"));
-                    prixunitairep.setText(rs.getString("prixunitaire"));
-                    idfourp.getSelectionModel().select(indexInListFournisseur(id));
-
-
-                }
-            }
-            catch (SQLException e1)
-            {
-                e1.printStackTrace();
-            }
-        }
     }
 
     //------------------ CONFIRMATION MODIFIER ----------------
     @FXML
     void confClick(ActionEvent event)
     {
+        Pie piece = table.getSelectionModel().getSelectedItem();
         String marque,modele,serie,qte,prixunitaire, idconf ;
-        idconf = inputpiece.getText().trim();
         marque = marquepiece.getText().trim();
         modele = modelepiece.getText().trim();
         serie = seriepiece.getText().trim();
@@ -400,7 +346,7 @@ public class Piece implements Initializable {
         }
         else
         {
-            if(ChampsIdEstInt(qte)==false)
+            if(!ChampsIdEstInt(qte))
             {
                 Message("quantité invalide");
                 quantitepiece.setText("");
@@ -408,7 +354,7 @@ public class Piece implements Initializable {
             }
             else
             {
-                if(QteSupOuEgaleZero(qte) == false)
+                if(!QteSupOuEgaleZero(qte))
                 {
                     Message("quantité invalide");
                     quantitepiece.setText("");
@@ -416,7 +362,7 @@ public class Piece implements Initializable {
                 }
                 else
                 {
-                    if(ChampPrixEstDouble(prixunitaire)==false)
+                    if(!ChampPrixEstDouble(prixunitaire))
                     {
                         Message("prix unitaire invalide !!");
                         prixunitairep.setText("");
@@ -424,7 +370,7 @@ public class Piece implements Initializable {
                     }
                     else
                     {
-                        if(PrixSupZero(prixunitaire) == false)
+                        if(!PrixSupZero(prixunitaire))
                         {
                             Message("prix unitaire invalide !!");
                             prixunitairep.setText("");
@@ -432,6 +378,7 @@ public class Piece implements Initializable {
                         }
                         else
                         {
+                            idconf = String.valueOf(piece.getIdpiece());
                             if(MMSEstUnique(marque, "marque", idconf) || MMSEstUnique(modele, "modele",idconf) || MMSEstUnique(serie, "serie",idconf))
                             {
                                 try
@@ -446,7 +393,8 @@ public class Piece implements Initializable {
                                     pst.setString(7, idconf);
                                     pst.executeUpdate();
                                     Message("Pièce Modifié !!");
-                                    Actualiser();
+                                    list = getPieces();
+                                    Actualiser(list);
                                     inputpiece.setText("");
                                     marquepiece.setText("");
                                     modelepiece.setText("");
@@ -479,10 +427,17 @@ public class Piece implements Initializable {
     @FXML
     void suppClick(ActionEvent event)
     {
-        String id=inputpiece.getText();
-        if(ChampsIdEstInt(id)==false || IdExist(id)==false)
+        Pie piece = table.getSelectionModel().getSelectedItem();
+        String id ="";
+        try {
+            id = String.valueOf(piece.getIdpiece());
+        }catch (Exception e)
         {
-            Message("Impossible De Supprimer (champ invalide ou ID n'existe pas)");
+            Message("Veuillez sélectionner une pièce !");
+        }
+        if(id.equals(""))
+        {
+            Message("Impossible De Supprimer");
             inputpiece.setText("");
             inputpiece.requestFocus();
         }
@@ -495,7 +450,8 @@ public class Piece implements Initializable {
                 pst.setString(2, id);
                 pst.executeUpdate();
                 Message("Pièce Supprimée !!");
-                Actualiser();
+                list = getPieces();
+                Actualiser(list);
                 inputpiece.setText("");
                 inputpiece.requestFocus();
             }
@@ -505,7 +461,6 @@ public class Piece implements Initializable {
             }
         }
     }
-
 
     //------------------- RETOUR interface -----------------------
     @FXML
@@ -526,7 +481,6 @@ public class Piece implements Initializable {
         }
     }
 
-
     //----------------- DECONNEXION ----------------------------
     @FXML
     void decClick(ActionEvent event)
@@ -544,7 +498,17 @@ public class Piece implements Initializable {
         }
     }
 
-
+    @FXML
+    void viderClick(ActionEvent event)
+    {
+        marquepiece.setText("");
+        modelepiece.setText("");
+        seriepiece.setText("");
+        quantitepiece.setText("");
+        prixunitairep.setText("");
+        idfourp.getSelectionModel().select(-1);
+        inputpiece.setText("");
+    }
 
 
 
@@ -584,43 +548,6 @@ public class Piece implements Initializable {
         return b;
     }
 
-
-    //--------------------------id exist---------------------------------
-    public boolean IdExist(String id)
-    {
-        ArrayList listid = new ArrayList();
-        try
-        {
-            pst = con.prepareStatement("select idpiece from piece where etat = 0");
-            ResultSet rs = pst.executeQuery();
-
-            //empiler tabid avec les id à partir de la base de donnée
-            while(rs.next())
-            {
-                listid.add(rs.getString("idpiece"));
-            }
-
-
-            int i = 0 ;
-            boolean bool = false;
-            while(i<listid.size() || bool == true)
-            {
-                if(id.equals(listid.get(i)))
-                {
-                    bool = true;
-                    return true;
-                }
-                i++;
-            }
-
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
     //------------------------------- verification tous les champs ----------------------------
     public boolean ChampEstVide(String...champs)
     {
@@ -656,7 +583,6 @@ public class Piece implements Initializable {
         return b;
     }
 
-
     //-------------------------- Champ qte ---------------------
     public boolean QteSupOuEgaleZero(String champsId)
     {
@@ -678,7 +604,6 @@ public class Piece implements Initializable {
         }
         return false;
     }
-
 
     //------------------------ list déroulante ------------------
     public void setListeDeroulante()
@@ -738,6 +663,7 @@ public class Piece implements Initializable {
         }
         return true; //donc unique eli jebeteha en para
     }
+
     //------------------- Marque Serie Modele est UNIQUE----------------------
     public boolean MMSEstUnique(String mms, String rqt)
     {

@@ -12,12 +12,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import org.w3c.dom.events.MouseEvent;
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -248,7 +246,6 @@ public class Employe implements Initializable {
         }
     }
 
-
     //--------------------- SELECT ROW DISPLAY ON TEXT FIELDS -----------------
     public void ligneClick(javafx.scene.input.MouseEvent mouseEvent)
     {
@@ -277,10 +274,9 @@ public class Employe implements Initializable {
         }
     }
 
-
-    //----------------------- CONFIRMER MODIFER -------------------------------
+    //----------------------- MODIFER -------------------------------
     @FXML
-    void confClick(ActionEvent event)
+    void modClick(ActionEvent event)
     {
         Emp employe = table.getSelectionModel().getSelectedItem();
         String nom,prenom,adresse,mail,post,password,salaire;
@@ -502,11 +498,6 @@ public class Employe implements Initializable {
     }
 
 
-    @FXML
-    void postClick(ActionEvent event) {
-
-    }
-
 
     @FXML
     void backClick(ActionEvent event)
@@ -552,6 +543,7 @@ public class Employe implements Initializable {
         salEmp.setText("");
         PostEmp.getSelectionModel().select(-1);
         pwdEmp.setText("");
+        inputEmp.setText("");
     }
 
 
