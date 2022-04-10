@@ -25,14 +25,7 @@ public class Login {
     PreparedStatement pst;
 
     @FXML
-    private Button LoginBtn;
-
-    @FXML
     private TextField idLog;
-
-    @FXML
-    private ImageView logImg;
-
     @FXML
     private PasswordField pwdLog;
 
@@ -54,7 +47,6 @@ public class Login {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = getConnection("jdbc:mysql://localhost/gestionstock", "root","");
-            System.out.println("Connecté !!");
 
         }
         catch (ClassNotFoundException ex)
@@ -73,15 +65,15 @@ public class Login {
     {
         String id = idLog.getText().trim();
         String pwd = pwdLog.getText().trim();
-        if(ChampEstVide(id, pwd) == true)
+        if(ChampEstVide(id, pwd))
         {
             Message("Verifiez vos champs");
         }
         else
         {
-            if(ChampsIdEstInt(id) ==false || IdExist(id) == false)
+            if(!ChampsIdEstInt(id) || !IdExist(id))
             {
-                Message("id invalide ou n'existe pas");
+                Message("ID incorrect");
                 idLog.setText("");
                 idLog.requestFocus();
             }
@@ -113,7 +105,7 @@ public class Login {
                                         }
                                         else
                                         {
-                                            Message("Authentifié ADMIN");
+                                            //Message("Authentifié ADMIN");
                                             AdminWindow(rs.getString("nom"),event);
                                         }
                                     }

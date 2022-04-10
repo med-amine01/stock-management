@@ -40,25 +40,14 @@ public class Employe implements Initializable {
     private TableColumn<Emp, String> POSTcol;
 
 
-
     @FXML
     private ComboBox<?> PostEmp;
     @FXML
     private TextField addEmp;
     @FXML
-    private Button ajouBtn;
-    @FXML
-    private Button backBtn;
-    @FXML
-    private Button confBtn;
-    @FXML
-    private Button dec;
-    @FXML
     private TextField inputEmp;
     @FXML
     private TextField mailEmp;
-    @FXML
-    private Button modBtn;
     @FXML
     private TextField nomEmp;
     @FXML
@@ -66,11 +55,7 @@ public class Employe implements Initializable {
     @FXML
     private TextField pwdEmp;
     @FXML
-    private Button rechBtn;
-    @FXML
     private TextField salEmp;
-    @FXML
-    private Button suppBtn;
     @FXML
     private Label user;
 

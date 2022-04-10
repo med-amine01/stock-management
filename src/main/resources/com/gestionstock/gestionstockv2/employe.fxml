@@ -10,14 +10,12 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gestionstock.gestionstockv2.Employe">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gestionstock.gestionstockv2.Employe">
    <left>
       <AnchorPane prefHeight="700.0" prefWidth="450.0" style="-fx-background-color: #054468;" BorderPane.alignment="CENTER">
          <children>
@@ -80,54 +78,15 @@
                   <TextField fx:id="pwdEmp" prefHeight="35.0" prefWidth="281.0" promptText="******" />
                </children>
             </VBox>
-            <Button fx:id="ajouBtn" layoutX="304.0" layoutY="504.0" mnemonicParsing="false" onAction="#ajoutClick" prefHeight="36.0" prefWidth="125.0" style="-fx-border-color: #43A047; -fx-border-width: 1.5px 1.5px 1.5px 1.5px;" />
-            <Button fx:id="confBtn" layoutX="156.0" layoutY="504.0" mnemonicParsing="false" onAction="#confClick" prefHeight="36.0" prefWidth="125.0" style="-fx-border-color: #FFC300; -fx-border-width: 1.5px 1.5px 1.5px 1.5px;" />
+            <Button layoutX="304.0" layoutY="504.0" mnemonicParsing="false" onAction="#ajoutClick" prefHeight="36.0" prefWidth="125.0" style="-fx-border-color: #43A047; -fx-border-width: 1.5px 1.5px 1.5px 1.5px;" text="Ajouter" />
+            <Button layoutX="156.0" layoutY="504.0" mnemonicParsing="false" onAction="#confClick" prefHeight="36.0" prefWidth="125.0" style="-fx-border-color: #FFC300; -fx-border-width: 1.5px 1.5px 1.5px 1.5px;" text="Modifier" />
             <TextField fx:id="inputEmp" layoutX="14.0" layoutY="581.0" prefHeight="36.0" prefWidth="274.0" promptText="ID" />
-            <Button fx:id="rechBtn" layoutX="304.0" layoutY="580.0" mnemonicParsing="false" onAction="#rechClick" prefHeight="36.0" prefWidth="125.0" style="-fx-border-color: #01F6FE; -fx-border-width: 2px 2px 2px 2px;" />
-            <Button fx:id="suppBtn" layoutX="12.0" layoutY="504.0" mnemonicParsing="false" onAction="#suppClick" prefHeight="36.0" prefWidth="125.0" style="-fx-border-color: #FE0101;" />
-            <Button fx:id="backBtn" layoutX="12.0" layoutY="14.0" mnemonicParsing="false" onAction="#backClick" prefHeight="24.0" prefWidth="35.0" />
+            <Button layoutX="304.0" layoutY="580.0" mnemonicParsing="false" onAction="#rechClick" prefHeight="36.0" prefWidth="125.0" style="-fx-border-color: #01F6FE; -fx-border-width: 2px 2px 2px 2px;" text="Rechercher" />
+            <Button layoutX="12.0" layoutY="504.0" mnemonicParsing="false" onAction="#suppClick" prefHeight="36.0" prefWidth="125.0" style="-fx-border-color: #FE0101;" text="Supprimer" />
+            <Button layoutX="12.0" layoutY="14.0" mnemonicParsing="false" onAction="#backClick" prefHeight="24.0" prefWidth="35.0" />
             <FontAwesomeIconView disable="true" glyphName="ARROW_LEFT" layoutX="22.0" layoutY="31.0" size="15" wrappingWidth="18.142857551574707" />
-            <Label disable="true" layoutX="316.0" layoutY="513.0" text="Ajouter">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
-            <Label disable="true" layoutX="162.0" layoutY="513.0" text="Modifier">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
-            <Label disable="true" layoutX="22.0" layoutY="513.0" text="Supprimer">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
-            <ImageView disable="true" fitHeight="18.0" fitWidth="25.0" layoutX="249.0" layoutY="513.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../../../icons/updating.png" />
-               </image>
-            </ImageView>
-            <ImageView disable="true" fitHeight="18.0" fitWidth="25.0" layoutX="109.0" layoutY="513.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../../../icons/close.png" />
-               </image>
-            </ImageView>
-            <ImageView disable="true" fitHeight="18.0" fitWidth="25.0" layoutX="400.0" layoutY="513.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../../../icons/add(1).png" />
-               </image>
-            </ImageView>
-            <Label disable="true" layoutX="316.0" layoutY="590.0" text="Rechercher">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
-            <ImageView disable="true" fitHeight="18.0" fitWidth="25.0" layoutX="400.0" layoutY="589.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../../../icons/loupe.png" />
-               </image>
-            </ImageView>
-            <Button layoutX="374.0" layoutY="14.0" mnemonicParsing="false" onAction="#viderClick" text="Vider" />
+            <Button layoutX="394.0" layoutY="14.0" mnemonicParsing="false" onAction="#viderClick" prefHeight="24.0" prefWidth="35.0" />
+            <FontAwesomeIconView disable="true" glyphName="REMOVE" layoutX="405.0" layoutY="31.0" size="16" />
          </children>
       </AnchorPane>
    </left>
@@ -149,7 +108,7 @@
                </opaqueInsets>
             </TableView>
             <FontAwesomeIconView glyphName="USER" layoutX="37.0" layoutY="30.0" size="25" />
-            <Button fx:id="dec" layoutX="691.0" layoutY="12.0" mnemonicParsing="false" onAction="#decClick" prefHeight="24.0" prefWidth="38.0" />
+            <Button layoutX="691.0" layoutY="12.0" mnemonicParsing="false" onAction="#decClick" prefHeight="24.0" prefWidth="38.0" />
             <FontAwesomeIconView disable="true" glyphName="LOCK" layoutX="704.0" layoutY="31.0" size="20" />
             <Label fx:id="user" layoutX="66.0" layoutY="9.0" prefHeight="29.0" prefWidth="219.0" text="Label">
                <font>

@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml1" fx:controller="com.gestionstock.gestionstockv2.Login">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gestionstock.gestionstockv2.Login">
     <left>
         <AnchorPane prefHeight="200.0" prefWidth="300.0" style="-fx-background-color: #054468;" BorderPane.alignment="CENTER">
             <children>
@@ -41,7 +41,7 @@
                </font></PasswordField>
                 <FontAwesomeIconView fill="#054468" glyphName="USER" layoutX="82.0" layoutY="189.0" size="20" />
                 <FontAwesomeIconView fill="#054468" glyphName="LOCK" layoutX="82.0" layoutY="248.0" size="20" />
-                <Button fx:id="LoginBtn" layoutX="102.0" layoutY="287.0" mnemonicParsing="false" onAction="#authClick" prefHeight="30.0" prefWidth="210.0" style="-fx-background-color: #43A047;" text="S'authentifier" textAlignment="CENTER" textFill="WHITE">
+                <Button layoutX="102.0" layoutY="287.0" mnemonicParsing="false" onAction="#authClick" prefHeight="30.0" prefWidth="210.0" style="-fx-background-color: #43A047;" text="S'authentifier" textAlignment="CENTER" textFill="WHITE">
                     <font>
                         <Font size="18.0" />
                     </font>
