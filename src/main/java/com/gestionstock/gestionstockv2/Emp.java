@@ -8,8 +8,10 @@ public class Emp {
     private String mail;
     private String poste;
     private double salaire;
+    private String password;
+    private String etat;
 
-    public Emp(int id, String nom, String prenom, String adresse, String mail, String poste, double salaire) {
+    public Emp(int id, String nom, String prenom, String adresse, String mail, String poste, double salaire, String password, String etat) {
         this.id = id;
         this.nom = nom;
         this.prenom = prenom;
@@ -17,6 +19,8 @@ public class Emp {
         this.mail = mail;
         this.poste = poste;
         this.salaire = salaire;
+        this.password = password;
+        this.etat = etat;
     }
 
     public int getId() {
@@ -73,5 +77,13 @@ public class Emp {
 
     public void setSalaire(double salaire) {
         this.salaire = salaire;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

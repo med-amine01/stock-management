@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import org.w3c.dom.events.MouseEvent;
 
 import java.io.IOException;
 import java.net.URL;
@@ -79,12 +80,14 @@ public class Employe implements Initializable {
 
     Connection con;
     PreparedStatement pst,pst1;
+    ObservableList<Emp> list;
 
 
     //------------------ LOAD ON OPEN ---------------------------
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        Actualiser();
+        list = getEmployees();
+        Actualiser(list);
     }
 
     //-------------------- Connection à la base de donnée -----------------------
@@ -93,7 +96,6 @@ public class Employe implements Initializable {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection("jdbc:mysql://localhost/gestionstock", "root","");
-            System.out.println("Connecté !!");
 
         }
         catch (ClassNotFoundException ex)
@@ -114,14 +116,16 @@ public class Employe implements Initializable {
         connect();
         try
         {
-            pst = con.prepareStatement("select idemp,nom,prenom,adresse,mail,salaire,post from employe where etat = 0");
+            pst = con.prepareStatement("select idemp,nom,prenom,adresse,mail,salaire,post,password,etat from employe where etat = 0");
             ResultSet rs = pst.executeQuery();
             Emp employees;
 
             while (rs.next())
             {
-                employees = new Emp(rs.getInt("idemp"), rs.getString("nom"), rs.getString("prenom"),rs.getString("adresse"),
-                        rs.getString("mail"),rs.getString("post"),rs.getDouble("salaire"));
+                employees = new Emp(rs.getInt("idemp"), rs.getString("nom"),
+                        rs.getString("prenom"),rs.getString("adresse"),
+                        rs.getString("mail"),rs.getString("post"),
+                        rs.getDouble("salaire"),rs.getString("password"),rs.getString("etat"));
                 empList.add(employees);
             }
         }
@@ -145,8 +149,10 @@ public class Employe implements Initializable {
 
             while (rs.next())
             {
-                employees = new Emp(rs.getInt("idemp"), rs.getString("nom"), rs.getString("prenom"),rs.getString("adresse"),
-                        rs.getString("mail"),rs.getString("post"),rs.getDouble("salaire"));
+                employees = new Emp(rs.getInt("idemp"), rs.getString("nom"),
+                        rs.getString("prenom"),rs.getString("adresse"),
+                        rs.getString("mail"),rs.getString("post"),
+                        rs.getDouble("salaire"),rs.getString("password"),rs.getString("etat"));
                 empList.add(employees);
             }
         }
@@ -159,9 +165,9 @@ public class Employe implements Initializable {
     }
 
     //---------------------------- ACTUALISER -----------------------------
-    public void Actualiser()
+    public void Actualiser(ObservableList<Emp> list)
     {
-        ObservableList<Emp> list = getEmployees();
+        //ObservableList<Emp> list = getEmployees();
         IDcol.setCellValueFactory(new PropertyValueFactory<Emp,Integer>("id"));
         NOMcol.setCellValueFactory(new PropertyValueFactory<Emp,String>("nom"));
         PRENOMcol.setCellValueFactory(new PropertyValueFactory<Emp,String>("prenom"));
@@ -194,9 +200,9 @@ public class Employe implements Initializable {
         }
         else
         {
-            if(!MailEstUniqueAjout(mail) || !valideMail(mail))
+            if(!valideMail(mail))
             {
-                Message("L'employé Déjà Existe ou  mail invalide");
+                Message("Mail Invalide");
                 mailEmp.setText("");
                 mailEmp.requestFocus();
             }
@@ -210,7 +216,7 @@ public class Employe implements Initializable {
                 }
                 else
                 {
-                    if( PostEmp.getSelectionModel().getSelectedIndex() == -1)
+                    if(PostEmp.getSelectionModel().getSelectedIndex() == -1)
                     {
                         Message("Choisissez la poste !");
                         PostEmp.requestFocus();
@@ -231,7 +237,8 @@ public class Employe implements Initializable {
                             pst.setString(9, "0");
                             pst.executeUpdate();
                             Message("Employé Ajouté !!");
-                            Actualiser();
+                            list = getEmployees();
+                            Actualiser(list);
                             nomEmp.setText("");
                             preEmp.setText("");
                             addEmp.setText("");
@@ -239,6 +246,12 @@ public class Employe implements Initializable {
                             pwdEmp.setText("");
                             salEmp.setText("");
                             nomEmp.requestFocus();
+                        }
+                        catch (SQLIntegrityConstraintViolationException e)
+                        {
+                            Message("Employé Existe avec le même adresse e-mail !");
+                            mailEmp.setText("");
+                            mailEmp.requestFocus();
                         }
                         catch (SQLException e1)
                         {
@@ -250,70 +263,49 @@ public class Employe implements Initializable {
         }
     }
 
-    //------------------------ MODIFER-------------------------
-    @FXML
-    void modClick(ActionEvent event)
+
+    //--------------------- SELECT ROW DISPLAY ON TEXT FIELDS -----------------
+    public void ligneClick(javafx.scene.input.MouseEvent mouseEvent)
     {
-        String id=inputEmp.getText();
-        if(ChampsIdEstInt(id)==false || IdExist(id)==false)
+        Emp employe = table.getSelectionModel().getSelectedItem();
+
+        nomEmp.setText(employe.getNom());
+        preEmp.setText(employe.getPrenom());
+        addEmp.setText(employe.getAdresse());
+        mailEmp.setText(employe.getMail());
+        salEmp.setText(String.valueOf(employe.getSalaire()));
+        pwdEmp.setText(employe.getPassword());
+
+        if(employe.getPoste().equals("Stock"))
         {
-            Message("Impossible De Modifier (id invalide)");
-            inputEmp.setText("");
-            inputEmp.requestFocus();
+            PostEmp.getSelectionModel().select(0);
         }
-        else
+
+        if(employe.getPoste().equals("Vendeur"))
         {
-            try
-            {
-                pst = con.prepareStatement("select nom,prenom,adresse,mail,salaire,post,password from employe where idemp = "+id+";");
-                ResultSet rs = pst.executeQuery();
+            PostEmp.getSelectionModel().select(1);
+        }
 
-                while(rs.next())
-                {
-                    nomEmp.setText(rs.getString("nom"));
-                    preEmp.setText(rs.getString("prenom"));
-                    addEmp.setText(rs.getString("adresse"));
-                    mailEmp.setText(rs.getString("mail"));
-                    salEmp.setText(rs.getString("salaire"));
-                    pwdEmp.setText(rs.getString("password"));
-
-                    if(rs.getString("post").equals("Stock"))
-                    {
-                        PostEmp.getSelectionModel().select(0);
-                    }
-
-                    if(rs.getString("post").equals("Vendeur"))
-                    {
-                        PostEmp.getSelectionModel().select(1);
-                    }
-
-                    if(rs.getString("post").equals("ADMIN"))
-                    {
-                        PostEmp.getSelectionModel().select(2);
-                    }
-                }
-            }
-            catch (SQLException e1)
-            {
-                e1.printStackTrace();
-            }
+        if(employe.getPoste().equals("ADMIN"))
+        {
+            PostEmp.getSelectionModel().select(2);
         }
     }
+
 
     //----------------------- CONFIRMER MODIFER -------------------------------
     @FXML
     void confClick(ActionEvent event)
     {
-        String nom,prenom,adresse,mail,post,password,salaire,idconf;
+        Emp employe = table.getSelectionModel().getSelectedItem();
+        String nom,prenom,adresse,mail,post,password,salaire;
         nom = nomEmp.getText().trim();
-        idconf = inputEmp.getText().trim();
         prenom = preEmp.getText().trim();
         adresse = addEmp.getText().trim();
         mail = mailEmp.getText().trim();
         post = PostEmp.getSelectionModel().getSelectedItem().toString();
         password = pwdEmp.getText().trim();
         salaire = salEmp.getText().trim();
-
 
         if(ChampEstVide(nom, prenom, adresse, mail, password, salaire))
         {
@@ -322,9 +314,9 @@ public class Employe implements Initializable {
         }
         else
         {
-            if(!MailEstUnique(mail,idconf) || !valideMail(mail))
+            if(!valideMail(mail))
             {
-                Message( "L'employé Déjà Existe ou  mail invalide");
+                Message( "Mail invalide");
                 mailEmp.setText("");
                 mailEmp.requestFocus();
             }
@@ -348,12 +340,19 @@ public class Employe implements Initializable {
                         pst.setString(5, salaire);
                         pst.setString(6, post);
                         pst.setString(7, password);
-                        pst.setString(8, idconf);
+                        pst.setString(8, String.valueOf(employe.getId()));
                         pst.executeUpdate();
                         Message("Employé Modifié !!");
-                        Actualiser();
+                        list = getEmployees();
+                        Actualiser(list);
                         inputEmp.requestFocus();
 
+                    }
+                    catch (SQLIntegrityConstraintViolationException e)
+                    {
+                        Message("Employé Existe avec le même adresse e-mail !");
+                        mailEmp.setText("");
+                        mailEmp.requestFocus();
                     }
                     catch (SQLException e1)
                     {
@@ -368,8 +367,19 @@ public class Employe implements Initializable {
     @FXML
     void suppClick(ActionEvent event)
     {
-        String id=inputEmp.getText();
-        if(ChampsIdEstInt(id)==false || IdExist(id)==false)
+        Emp employe = table.getSelectionModel().getSelectedItem();
+        String id ="";
+        String res = "";
+        try {
+            id = String.valueOf(employe.getId());
+        }catch (Exception e)
+        {
+            res = "Veuillez sélectionner un employé !";
+            //Message("Veuillez sélectionner un employé !");
+        }
+
+
+        if(id.equals(""))
         {
             Message("Impossible De Supprimer");
             inputEmp.setText("");
@@ -377,8 +387,6 @@ public class Employe implements Initializable {
         }
         else
         {
-            //if deleting an admin it should require an auth of that specific admin (simplier)
-            //defaut : admin should authentify at least once before getting deleted
             try
             {
                 pst1 = con.prepareStatement("select idemp, password, post , nom from employe where idemp = "+id+";");
@@ -408,7 +416,8 @@ public class Employe implements Initializable {
                                     pst.setString(2, id);
                                     pst.executeUpdate();
                                     Message("Admin Supprimé !!");
-                                    Actualiser();
+                                    list = getEmployees();
+                                    Actualiser(list);
                                     inputEmp.setText("");
                                     inputEmp.requestFocus();
                                 }
@@ -419,7 +428,7 @@ public class Employe implements Initializable {
                             }
                             else
                             {
-                                Message("Impossible De Supprimer");
+                                Message(res+" Impossible De Supprimer");
                             }
                         }
 
@@ -440,7 +449,8 @@ public class Employe implements Initializable {
                                 pst.setString(2, id);
                                 pst.executeUpdate();
                                 Message("Employé Supprimé !!");
-                                Actualiser();
+                                list = getEmployees();
+                                Actualiser(list);
                                 inputEmp.setText("");
                                 inputEmp.requestFocus();
                             }
@@ -456,7 +466,6 @@ public class Employe implements Initializable {
             {
                 ex.printStackTrace();
             }
-
         }
     }
 
@@ -467,46 +476,42 @@ public class Employe implements Initializable {
         String rech = inputEmp.getText().trim();
         if(rech.equals(""))
         {
-            Actualiser();
+            list = getEmployees();
+            Actualiser(list);
         }
         else
         {
-            if(ChampsIdEstInt(rech)== true) //3RAFNA ELI HOA YFARKESS BEL ID
+            if(ChampsIdEstInt(rech)) //3RAFNA ELI HOA YFARKESS BEL ID
             {
-                if(IdExist(rech)==false)
+                String rqt = "select idemp,nom,prenom,adresse,mail,salaire,post,password,etat from employe where etat = 0 and idemp = "+rech;
+                list = getEmployees(rqt);
+
+                if(list.isEmpty())
                 {
-                    Message("ID n'existe pas !!");
+                    Message("ID <"+rech+"> n'existe pas !!");
                     inputEmp.setText("");
                     inputEmp.requestFocus();
                 }
                 else
                 {
-
-                    String rqt = "select idemp,nom,prenom,adresse,mail,salaire,post from employe where etat = 0 and idemp = "+rech;
-                    ObservableList<Emp> list = getEmployees(rqt);
-                    IDcol.setCellValueFactory(new PropertyValueFactory<Emp,Integer>("id"));
-                    NOMcol.setCellValueFactory(new PropertyValueFactory<Emp,String>("nom"));
-                    PRENOMcol.setCellValueFactory(new PropertyValueFactory<Emp,String>("prenom"));
-                    ADDcol.setCellValueFactory(new PropertyValueFactory<Emp,String>("adresse"));
-                    MAILcol.setCellValueFactory(new PropertyValueFactory<Emp,String>("mail"));
-                    POSTcol.setCellValueFactory(new PropertyValueFactory<Emp,String>("poste"));
-                    SALcol.setCellValueFactory(new PropertyValueFactory<Emp,Double>("salaire"));
-                    table.setItems(list);
+                      Actualiser(list);
                 }
             }
             else
             {
-                String rqt = "select idemp,nom,prenom,adresse,mail,salaire,post from employe where nom like '"+rech+"%'" +
+                String rqt = "select idemp,nom,prenom,adresse,mail,salaire,post,password,etat from employe where nom like '"+rech+"%'" +
                         "or prenom like '"+rech+"%' or adresse like '"+rech+"%' or post like '"+rech+"%' HAVING etat = 0";
-                ObservableList<Emp> list = getEmployees(rqt);
-                IDcol.setCellValueFactory(new PropertyValueFactory<Emp,Integer>("id"));
-                NOMcol.setCellValueFactory(new PropertyValueFactory<Emp,String>("nom"));
-                PRENOMcol.setCellValueFactory(new PropertyValueFactory<Emp,String>("prenom"));
-                ADDcol.setCellValueFactory(new PropertyValueFactory<Emp,String>("adresse"));
-                MAILcol.setCellValueFactory(new PropertyValueFactory<Emp,String>("mail"));
-                POSTcol.setCellValueFactory(new PropertyValueFactory<Emp,String>("poste"));
-                SALcol.setCellValueFactory(new PropertyValueFactory<Emp,Double>("salaire"));
-                table.setItems(list);
+                list = getEmployees(rqt);
+                if(list.isEmpty())
+                {
+                    Message("<"+rech+"> n'existe pas !");
+                    inputEmp.setText("");
+                    inputEmp.requestFocus();
+                }
+                else
+                {
+                    Actualiser(list);
+                }
             }
         }
     }
@@ -552,6 +557,18 @@ public class Employe implements Initializable {
         }
     }
 
+    @FXML
+    void viderClick(ActionEvent event)
+    {
+        nomEmp.setText("");
+        preEmp.setText("");
+        addEmp.setText("");
+        mailEmp.setText("");
+        salEmp.setText("");
+        PostEmp.getSelectionModel().select(-1);
+        pwdEmp.setText("");
+    }
+
 
 
 
@@ -591,42 +608,6 @@ public class Employe implements Initializable {
     }
 
 
-    //--------------------------id exist---------------------------------
-    public boolean IdExist(String id)
-    {
-        ArrayList listid = new ArrayList();
-        try
-        {
-            pst = con.prepareStatement("select idemp from employe where etat = 0");
-            ResultSet rs = pst.executeQuery();
-
-            //empiler tabid avec les id à partir de la base de donnée
-            while(rs.next())
-            {
-                listid.add(rs.getString("idemp"));
-            }
-
-
-            int i = 0 ;
-            boolean bool = false;
-            while(i<listid.size() || bool == true)
-            {
-                if(id.equals(listid.get(i)))
-                {
-                    bool = true;
-                    return true;
-                }
-                i++;
-            }
-
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
     //------------------------------- verification tous les champs ----------------------------
     public boolean ChampEstVide(String...champs)
     {
@@ -663,78 +644,6 @@ public class Employe implements Initializable {
     }
 
 
-    //-------------------- mail unique -------------------------
-    public boolean MailEstUnique(String inputMail, String id)
-    {
-        ArrayList listmail = new ArrayList();
-        try
-        {
-            pst = con.prepareStatement("select mail from employe where idemp != '"+id+"' and etat = 0");
-            ResultSet rs = pst.executeQuery();
-
-            //empiler tabmail avec les mail à partir de la base de donnée
-            while(rs.next())
-            {
-                listmail.add(rs.getString("mail"));
-            }
-
-            int i = 0 ;
-            boolean bool = false;
-            while(i<listmail.size() || bool == true)
-            {
-                if(inputMail.equals(listmail.get(i)))
-                {
-                    bool = true;
-                    return false;
-                }
-                i++;
-            }
-
-            listmail.clear();
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-        return true ;
-    }
-
-    //-------------------- mail unique pour l'ajout -------------------
-    public boolean MailEstUniqueAjout(String inputMail)
-    {
-        ArrayList listmail = new ArrayList();
-        try
-        {
-            pst = con.prepareStatement("select mail from employe where etat = 0");
-            ResultSet rs = pst.executeQuery();
-
-            //empiler tabmail avec les mail à partir de la base de donnée
-            while(rs.next())
-            {
-                listmail.add(rs.getString("mail"));
-            }
-
-            int i = 0 ;
-            boolean bool = false;
-            while(i<listmail.size() || bool == true)
-            {
-                if(inputMail.equals(listmail.get(i)))
-                {
-                    bool = true;
-                    return false;
-                }
-                i++;
-            }
-
-            listmail.clear();
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-        return true ;
-    }
-
     //----------------------- mail form ---------------------------
     public boolean valideMail(String inputMail)
     {
@@ -766,4 +675,7 @@ public class Employe implements Initializable {
         }
         return true ;
     }
+
+
+
 }
