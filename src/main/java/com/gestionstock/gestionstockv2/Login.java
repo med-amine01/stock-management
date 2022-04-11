@@ -31,7 +31,7 @@ public class Login {
 
     private Stage stage;
     private Scene scene;
-    private Parent root;
+    private Parent root,root2;
 
 
     @FXML
@@ -134,9 +134,8 @@ public class Login {
                                         }
                                         else
                                         {
-                                            Message("Authentifié Stock");
-                                            //StockWindow(id,event);
-                                            //frameLogin.dispose();
+                                            //Message("Authentifié Stock");
+                                            StockWindow(rs.getString("nom"),event);
                                         }
                                     }
                                 }
@@ -211,10 +210,10 @@ public class Login {
     // ------------------------ Stock Window ---------------------------
     public void StockWindow(String currentuser, ActionEvent event) throws IOException {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("inter.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("entree.fxml"));
             root = loader.load();
-            Inter interAdmin = loader.getController();
-            interAdmin.PrintAdminName(currentuser);
+            Entree entree = loader.getController();
+            entree.PrintUserName(currentuser);
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
             scene = new Scene(root);
             stage.setScene(scene);
