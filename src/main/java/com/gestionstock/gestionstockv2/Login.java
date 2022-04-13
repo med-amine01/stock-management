@@ -126,8 +126,6 @@ public class Login {
 
                                     while(rs2.next()) //parcours sur les tentatives
                                     {
-                                        System.out.println(rs2.getString("tentative"));
-
                                         if(rs2.getString("tentative").equals("0"))
                                         {
                                             ChangerPwd(id,"Stock",rs.getString("nom"),event);

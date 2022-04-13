@@ -69,7 +69,7 @@ public class Piece implements Initializable {
     //------------------ LOAD ON OPEN ---------------------------
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        list = getPieces();
+        list = getPieces("");
         Actualiser(list);
         setListeDeroulante();
     }
@@ -93,43 +93,26 @@ public class Piece implements Initializable {
         }
     }
 
-    //---------------------- chargement du tableau dans une liste-----------------------------
-    public ObservableList<Pie> getPieces()
-    {
-        ObservableList<Pie> piceList = FXCollections.observableArrayList();
-        connect();
-        try
-        {
-            pst = con.prepareStatement("select idpiece,marque,modele,serie,qte,prixunitaire,idfour,etat from piece where etat = 0");
-            ResultSet rs = pst.executeQuery();
-            Pie pieces;
-
-            while (rs.next())
-            {
-                pieces = new Pie(rs.getInt("idpiece"), rs.getString("marque"),
-                        rs.getString("modele"),rs.getString("serie"),
-                        rs.getInt("qte"),rs.getDouble("prixunitaire"),
-                        rs.getInt("idfour"),rs.getString("etat"));
-                piceList.add(pieces);
-            }
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-
-        return piceList;
-    }
 
     //---------------------- chargement du tableau dans une liste (Search)-----------------------------
     public ObservableList<Pie> getPieces(String sqlSearch)
     {
         ObservableList<Pie> piceList = FXCollections.observableArrayList();
         connect();
+        ResultSet rs;
         try
         {
-            pst = con.prepareStatement(sqlSearch);
-            ResultSet rs = pst.executeQuery();
+            if(sqlSearch.equals(""))
+            {
+                pst = con.prepareStatement(sqlSearch);
+                rs = pst.executeQuery();
+            }
+            else
+            {
+                pst = con.prepareStatement(sqlSearch);
+                rs = pst.executeQuery();
+            }
+
             Pie pieces;
 
             while (rs.next())
@@ -238,7 +221,7 @@ public class Piece implements Initializable {
 
                                         pst.executeUpdate();
                                         Message("pièce Ajoutée !!");
-                                        list = getPieces();
+                                        list = getPieces("");
                                         Actualiser(list);
                                         marquepiece.setText("");
                                         modelepiece.setText("");
@@ -274,7 +257,7 @@ public class Piece implements Initializable {
         String rech = inputpiece.getText().trim();
         if(rech.equals(""))
         {
-            list = getPieces();
+            list = getPieces("");
             Actualiser(list);
         }
         else
@@ -393,7 +376,7 @@ public class Piece implements Initializable {
                                     pst.setString(7, idconf);
                                     pst.executeUpdate();
                                     Message("Pièce Modifié !!");
-                                    list = getPieces();
+                                    list = getPieces("");
                                     Actualiser(list);
                                     inputpiece.setText("");
                                     marquepiece.setText("");
@@ -450,7 +433,7 @@ public class Piece implements Initializable {
                 pst.setString(2, id);
                 pst.executeUpdate();
                 Message("Pièce Supprimée !!");
-                list = getPieces();
+                list = getPieces("");
                 Actualiser(list);
                 inputpiece.setText("");
                 inputpiece.requestFocus();

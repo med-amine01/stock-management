@@ -22,6 +22,17 @@ public class Pie {
         this.etat = etat;
     }
 
+    public Pie(int idpiece, String marque, String modele, String serie, int qte, double prix,String etat)
+    {
+        this.idpiece = idpiece;
+        this.marque = marque;
+        this.modele = modele;
+        this.serie = serie;
+        this.qte = qte;
+        this.prix = prix;
+        this.etat = etat;
+    }
+
 
     public int getIdpiece() {
         return idpiece;
