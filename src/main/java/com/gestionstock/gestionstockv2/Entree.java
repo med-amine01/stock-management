@@ -157,7 +157,7 @@ public class Entree implements Initializable {
         {
             if(sqlSearch.equals(""))
             {
-                pst = con.prepareStatement("select idpiece,marque,modele,serie,qte,prixunitaire,etat from piece where etat = 0");
+                pst = con.prepareStatement("select * from piece where etat = 0");
                 rs= pst.executeQuery();
             }
             else
@@ -170,9 +170,13 @@ public class Entree implements Initializable {
 
             while (rs.next())
             {
-                pieces = new Pie(rs.getInt("idpiece"), rs.getString("marque"),
-                        rs.getString("modele"),rs.getString("serie"),
-                        rs.getInt("qte"),rs.getDouble("prixunitaire"),rs.getInt("idfour"),
+                pieces = new Pie(rs.getInt("idpiece"),
+                        rs.getString("marque"),
+                        rs.getString("modele"),
+                        rs.getString("serie"),
+                        rs.getInt("qte"),
+                        rs.getDouble("prixunitaire"),
+                        rs.getInt("idfour"),
                         rs.getString("etat"));
                 piceList.add(pieces);
             }

@@ -86,8 +86,7 @@
                         </Label>
                     </children>
                 </VBox>
-                <Button layoutX="253.0" layoutY="385.0" mnemonicParsing="false" onAction="#ajoutClick" prefHeight="35.0" prefWidth="177.0" style="-fx-border-color: #43A047; -fx-border-width: 1.5px 1.5px 1.5px 1.5px;" text="AJOUTER" />
-                <Button layoutX="14.0" layoutY="385.0" mnemonicParsing="false" onAction="#consulterClick" prefHeight="35.0" prefWidth="171.0" style="-fx-border-color: #01F6FE;" text="CONSULTER" />
+                <Button layoutX="12.0" layoutY="385.0" mnemonicParsing="false" onAction="#ajoutClick" prefHeight="35.0" prefWidth="418.0" style="-fx-border-color: #43A047; -fx-border-width: 1.5px 1.5px 1.5px 1.5px;" text="AJOUTER" />
                 <Button layoutX="12.0" layoutY="14.0" mnemonicParsing="false" onAction="#backClick" prefHeight="24.0" prefWidth="35.0" />
                 <FontAwesomeIconView disable="true" glyphName="ARROW_LEFT" layoutX="22.0" layoutY="31.0" size="15" wrappingWidth="18.142857551574707" />
                 <Button layoutX="395.0" layoutY="14.0" mnemonicParsing="false" onAction="#viderClick" prefHeight="24.0" prefWidth="35.0" />

@@ -8,9 +8,10 @@ public class Ent {
     private int qte;
     private String date;
     private double montant;
+    private int idfour;
 
 
-    public Ent(int id, int idpiece, String nomfour, int qte, String date,double montant ) {
+    public Ent(int id, int idpiece, String nomfour, int qte, String date,double montant) {
         this.id = id;
         this.nomfour = nomfour;
         this.idpiece = idpiece;
@@ -19,6 +20,15 @@ public class Ent {
         this.montant = montant;
     }
 
+    public Ent(int id, int idpiece, String nomfour, int qte, String date,double montant, int idfour) {
+        this.id = id;
+        this.nomfour = nomfour;
+        this.idpiece = idpiece;
+        this.qte = qte;
+        this.date = date;
+        this.montant = montant;
+        this.idfour = idfour;
+    }
     public int getId() {
         return id;
     }
@@ -65,5 +75,13 @@ public class Ent {
 
     public void setMontant(double montant) {
         this.montant = montant;
+    }
+
+    public int getIdfour() {
+        return idfour;
+    }
+
+    public void setIdfour(int idfour) {
+        this.idfour = idfour;
     }
 }

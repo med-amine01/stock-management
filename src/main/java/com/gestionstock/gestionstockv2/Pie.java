@@ -11,18 +11,7 @@ public class Pie {
     private String etat;
 
 
-    public Pie(int idpiece, String marque, String modele, String serie, int qte, double prix, int idfour,String etat) {
-        this.idpiece = idpiece;
-        this.marque = marque;
-        this.modele = modele;
-        this.serie = serie;
-        this.qte = qte;
-        this.prix = prix;
-        this.idfour = idfour;
-        this.etat = etat;
-    }
-
-    public Pie(int idpiece, String marque, String modele, String serie, int qte, double prix,String etat)
+    public Pie(int idpiece, String marque, String modele, String serie, int qte, double prix,int idfour,String etat)
     {
         this.idpiece = idpiece;
         this.marque = marque;
@@ -30,6 +19,7 @@ public class Pie {
         this.serie = serie;
         this.qte = qte;
         this.prix = prix;
+        this.idfour = idfour;
         this.etat = etat;
     }
 
