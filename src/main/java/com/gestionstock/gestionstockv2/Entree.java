@@ -4,7 +4,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -13,11 +15,18 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.ResourceBundle;
+
+import static java.lang.Integer.parseInt;
 
 public class Entree implements Initializable {
 
@@ -40,7 +49,7 @@ public class Entree implements Initializable {
     private TableColumn<Pie, String> SERcol;
 
 
-    //----------- ENTREE -----------------
+    //-------------- ENTREE -----------------
     @FXML
     private TableView<Ent> tableEntree;
     @FXML
@@ -60,42 +69,32 @@ public class Entree implements Initializable {
 
     @FXML
     private TextField date;
-
     @FXML
-    private TextField fournisseur;
-
+    private ComboBox<String> fournisseur;
     @FXML
     private TextField inputEntree;
-
     @FXML
     private TextField inputpiece;
-
     @FXML
     private TextField piece;
-
     @FXML
     private TextField qte;
-
     @FXML
     private DatePicker datePicker;
-
     @FXML
     private Label user;
-
     private Stage stage;
     private Scene scene;
     private Parent root;
 
     Connection con;
-    PreparedStatement pst;
+    PreparedStatement pst,pst1,pst2,pst3;
     ObservableList<Pie> listPiece;
     ObservableList<Ent> listEntree;
-    String pattern = "dd/MM/YYYY";
-    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(pattern);
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
 
         datePicker.setPromptText(LocalDate.now().format(dateFormatter));
         datePicker.setConverter(new StringConverter<LocalDate>() {
@@ -120,11 +119,13 @@ public class Entree implements Initializable {
         });
 
 
-
         listPiece = getPieces("");
         listEntree = getEntree("");
         ActualiserPiece(listPiece);
         ActualiserEntree(listEntree);
+        setListeDeroulante();
+
+        Timer();
     }
 
 
@@ -214,9 +215,12 @@ public class Entree implements Initializable {
 
             while (rs.next())
             {
-                entrees = new Ent(rs.getInt("identree"), rs.getInt("idpiece"),
-                        rs.getString("nom"), rs.getInt("qte"),
-                        rs.getString("date"),rs.getDouble("montant"));
+                entrees = new Ent(rs.getInt("identree"),
+                        rs.getInt("idpiece"),
+                        rs.getString("nom"),
+                        rs.getInt("qte"),
+                        rs.getString("date"),
+                        rs.getDouble("montant"));
                 entreeList.add(entrees);
             }
         }
@@ -252,59 +256,200 @@ public class Entree implements Initializable {
         tableEntree.setItems(list);
     }
 
-
-
+    //------------------ AJOUT ENTREE ----------------------------
     @FXML
-    void ajoutClick(ActionEvent event) {
+    void ajoutClick(ActionEvent event)
+    {
+        String qtee;
+        qtee = qte.getText().trim();
 
-    }
-
-    @FXML
-    void backClick(ActionEvent event) {
-
-    }
-
-    @FXML
-    void consulterClick(ActionEvent event) {
-
-    }
-
-    @FXML
-    void decClick(ActionEvent event) {
-
-    }
-
-    @FXML
-    void ligneEntreClick(MouseEvent event) {
-
-    }
-
-    @FXML
-    void lignePieceClick(MouseEvent event) {
-        Pie pie = tablePiece.getSelectionModel().getSelectedItem();
-        String nomfour = "";
-        try {
-            pst = con.prepareStatement("select nom from fournisseur where idfour = "+pie.getIdfour()+";");
-            System.out.println(pie.getIdfour());
-            ResultSet rs2 = pst.executeQuery();
-
-            while(rs2.next()) //parcours sur les tentatives
+        if(ChampEstVide(qtee))
+        {
+            Message("Verifiez Les Champs !!");
+            qte.requestFocus();
+        }
+        else
+        {
+            if(!ChampsIdEstInt(qtee))
             {
-                nomfour = rs2.getString("nom");
+                Message("quantité invalide");
+                qte.setText("");
+                qte.requestFocus();
+            }
+            else
+            {
+                if(!QteSupStrictementZero(qtee))
+                {
+                    Message("quantité invalide");
+                    qte.setText("");
+                    qte.requestFocus();
+                }
+                else
+                {
+                    try
+                    {
+                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                        alert.setHeaderText("Confirmation de l'entree");
+                        alert.setContentText("êtes vous sûr d'ajouter la quantité <"+qtee+"> ?");
+
+                        Optional<ButtonType> r = alert.showAndWait();
+                        if (r.get() == ButtonType.OK){
+                            pst1 = con.prepareStatement("select prixunitaire from piece where idpiece ="+piece.getText()+";");
+                            ResultSet rs1 = pst1.executeQuery();
+
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/YYYY-hh:mm:ss");
+                            LocalDateTime dateTime = LocalDateTime.now();
+
+
+
+                            pst2 = con.prepareStatement("select idfour from fournisseur where nom ='"+fournisseur.getSelectionModel().getSelectedItem()+"';");
+                            ResultSet rs2 = pst2.executeQuery();
+
+                            pst3 = con.prepareStatement("select idemp from employe where nom ='"+user.getText()+"';");
+                            ResultSet rs3 = pst3.executeQuery();
+
+
+
+                            pst = con.prepareStatement("insert into entree (qte,date,montant,idpiece,idfour,idemp,etat,confirmEntree) values (?,?,?,?,?,?,?,?)");
+                            while (rs1.next() && rs2.next() && rs3.next())
+                            {
+                                Double montant1 = (parseInt(qtee) * Double.parseDouble(rs1.getString("prixunitaire")));
+
+                                pst.setString(1, qtee);
+                                pst.setString(2, dateTime.format(formatter));
+                                pst.setDouble(3, Double.parseDouble(new DecimalFormat("####.###").format(montant1)));
+                                pst.setString(4, piece.getText());
+                                pst.setString(5, rs2.getString("idfour"));
+                                pst.setString(6, rs3.getString("idemp"));
+                                pst.setString(7,"0");
+                                pst.setString(8,"NoConfirm");
+                                pst.executeUpdate();
+                                Message("entrée Ajoutée !!");
+                                listEntree = getEntree("");
+                                ActualiserEntree(listEntree);
+                                viderClick(event);
+                            }
+                        }
+
+                    }
+                    catch (SQLException e1)
+                    {
+                        e1.printStackTrace();
+                    }
+                }
+            }
+        }
+
+    }
+
+
+    //---------------------------- TIMER CONFIRM ----------------------------------
+    public void Timer()
+    {
+        LocalDateTime cureentDate  = LocalDateTime.now();
+        LocalDateTime date2 ;
+
+
+        try
+        {
+            pst = con.prepareStatement("select date from entree where confirmEntree ='NoConfirm'");
+            ResultSet rs = pst.executeQuery();
+            while(rs.next())
+            {
+                int [] tabdate = convert(rs.getString("date")) ;
+                date2 = LocalDateTime.of(tabdate[0],tabdate[1],tabdate[2],tabdate[3],tabdate[4],tabdate[5]);
+                date2 = date2.plusSeconds(20);
+
+                if(cureentDate.isAfter(date2))
+                {
+                    pst = con.prepareStatement("update entree set confirmEntree = ? where date = '"+rs.getString("date")+"'");
+                    pst.setString(1, "Timer");
+                    pst.executeUpdate();
+                }
             }
         }
         catch (SQLException e)
         {
             e.printStackTrace();
         }
+    }
+
+    //--------------- Convert String to local date time ----------------
+    public int [] convert(String d)
+    {
+        String [] alldate = d.split("-") ;
+        String date = alldate[0]; //date ["14/04/2022"] -> type string
+        String time = alldate[1]; //time ["02:34:36"] -> type string
+        String [] splitdate = date.split("/");
+        String day = splitdate[0];
+        String month = splitdate[1];
+        String year = splitdate[2];
+        String [] splitTime = time.split(":");
+        String heure = splitTime[0];
+        String min = splitTime[1];
+        String sec = splitTime[2];
+
+        int [] tabdatetime = {
+                Integer.parseInt(year),
+                Integer.parseInt(month),
+                Integer.parseInt(day),
+                Integer.parseInt(heure),
+                Integer.parseInt(min),
+                Integer.parseInt(sec) };
+
+        return tabdatetime;
+
+    }
+
+    @FXML
+    void backClick(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("interstock.fxml"));
+            root = loader.load();
+            InterStock interStock = loader.getController();
+            interStock.PrintUserName(user.getText());
+            stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            stage.close();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.show();
+
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
+    @FXML
+    void decClick(ActionEvent event)
+    {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
+            root = loader.load();
+            stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    //-------------------- LIGNE PIECE CLICK ---------------------
+    @FXML
+    void lignePieceClick(MouseEvent event)
+    {
+        Pie pie = tablePiece.getSelectionModel().getSelectedItem();
         piece.setText(String.valueOf(pie.getIdpiece()));
-        fournisseur.setText(nomfour);
+        fournisseur.getSelectionModel().select(indexInListFournisseur(String.valueOf(pie.getIdfour())));;
         qte.setText("0");
         date.setText(LocalDate.now().format(dateFormatter));
     }
 
+    //----------------------- RECHERCHE ENTREE ---------------------
     @FXML
     void rechEntreeClick(ActionEvent event)
     {
@@ -367,6 +512,7 @@ public class Entree implements Initializable {
         }
     }
 
+    //------------------------ RECHERCHE PIECE -----------------------
     @FXML
     void rechPieceClick(ActionEvent event)
     {
@@ -419,7 +565,7 @@ public class Entree implements Initializable {
     void viderClick(ActionEvent event)
     {
         piece.setText("");
-        fournisseur.setText("");
+        fournisseur.getSelectionModel().select(-1);
         qte.setText("");
         date.setText("");
     }
@@ -487,31 +633,70 @@ public class Entree implements Initializable {
         return b;
     }
 
-    //------------------ champ est double----------------
-    public boolean ChampPrixEstDouble(String prix)
-    {
-        boolean b = false ;
-        try
-        {
-            Double.parseDouble(prix);
-            b = true;
-        }
-        catch(NumberFormatException e)
-        {
-            b = false;
-        }
-        return b;
-    }
-
     //-------------------------- Champ qte ---------------------
-    public boolean QteSupOuEgaleZero(String champsId)
+    public boolean QteSupStrictementZero(String champsId)
     {
         int qte = Integer.parseInt(champsId);
-        if(qte >= 0)
+        if(qte > 0)
         {
             return true;
         }
         return false;
     }
 
+
+    public void setListeDeroulante()
+    {
+        try {
+            pst = con.prepareStatement("select nom from fournisseur");
+            ResultSet rs = pst.executeQuery();
+
+
+            while (rs.next())
+            {
+                fournisseur.getItems().add(rs.getString("nom"));
+            }
+
+
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+
+    public int indexInListFournisseur(String idfour)
+    {
+        try
+        {
+            //bech yjib juste (idfour) piece mte3 nom fournisseur
+            pst = con.prepareStatement("select nom from fournisseur where idfour = "+idfour);
+            ResultSet rs1 = pst.executeQuery();
+            String s ="";
+            while (rs1.next())
+            {
+                s = rs1.getString("nom");
+            }
+
+            //bech yjib les pieces lkol w yee9if aand id
+            ArrayList<String> idfo = new ArrayList<>();
+            pst = con.prepareStatement("select nom from fournisseur");
+            ResultSet rs = pst.executeQuery();
+            while (rs.next())
+            {
+                idfo.add(rs.getString("nom"));
+                if(rs.getString("nom").equals(s))
+                {
+                    return idfo.indexOf(s);// ----> yraja3 indice mte3ou fi wosset list !!!!!!!!!
+                }
+            }
+            idfo.clear();
+        }
+        catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        }
+        return 0;
+    }
 }

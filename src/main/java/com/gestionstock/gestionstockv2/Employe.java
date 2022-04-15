@@ -508,6 +508,7 @@ public class Employe implements Initializable {
             Inter inter = loader.getController();
             inter.PrintAdminName(user.getText());
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            stage.close();
             scene = new Scene(root);
             stage.setScene(scene);
             stage.show();
@@ -524,6 +525,7 @@ public class Employe implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
             root = loader.load();
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            stage.close();
             scene = new Scene(root);
             stage.setScene(scene);
             stage.show();

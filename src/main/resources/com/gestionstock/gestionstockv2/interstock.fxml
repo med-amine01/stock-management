@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gestionstock.gestionstockv2.InterStock">
+    <left>
+        <AnchorPane prefHeight="200.0" prefWidth="300.0" style="-fx-background-color: #054468;" BorderPane.alignment="CENTER">
+            <children>
+                <Label layoutX="91.0" layoutY="40.0" text="Bonjour" textFill="WHITE">
+                    <font>
+                        <Font size="25.0" />
+                    </font>
+                </Label>
+                <Button layoutX="23.0" layoutY="448.0" mnemonicParsing="false" onAction="#decClick" prefHeight="30.0" prefWidth="255.0" style="-fx-background-color: transparent;" text="Déconnexion" textAlignment="RIGHT" textFill="WHITE">
+                    <font>
+                        <Font size="18.0" />
+                    </font>
+                </Button>
+                <FontAwesomeIconView disable="true" fill="WHITE" glyphName="LOCK" layoutX="69.0" layoutY="471.0" size="20" />
+                <Label fx:id="user" layoutX="117.0" layoutY="83.0" textFill="WHITE">
+                    <font>
+                        <Font size="20.0" />
+                    </font>
+                </Label>
+                <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="65.0" layoutY="175.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../../../icons/entree.png" />
+                    </image>
+                </ImageView>
+            </children>
+        </AnchorPane>
+    </left>
+    <right>
+        <AnchorPane prefHeight="200.0" prefWidth="400.0" BorderPane.alignment="CENTER">
+            <children>
+                <Button layoutX="25.0" layoutY="55.0" mnemonicParsing="false" onAction="#entreeClick" prefHeight="40.0" prefWidth="350.0" style="-fx-background-color: #054468;" text="Gérer Les Entrées" textAlignment="CENTER" textFill="WHITE">
+                    <font>
+                        <Font size="18.0" />
+                    </font>
+                </Button>
+                <FontAwesomeIconView fill="WHITE" glyphName="DOWNLOAD" layoutX="40.0" layoutY="82.0" size="20" />
+            <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="125.0" layoutY="175.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../icons/inside.png" />
+               </image>
+            </ImageView>
+            <Label fx:id="entreelabel" layoutX="155.0" layoutY="250.0" text="00">
+               <font>
+                  <Font name="System Bold" size="50.0" />
+               </font>
+            </Label>
+            <Label fx:id="entreeDate" layoutX="251.0" layoutY="20.0" prefHeight="16.0" prefWidth="124.0" text="dd/mm/yyyy">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font>
+            </Label>
+            </children>
+        </AnchorPane>
+    </right>
+</BorderPane>

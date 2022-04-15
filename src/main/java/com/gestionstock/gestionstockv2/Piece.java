@@ -41,7 +41,7 @@ public class Piece implements Initializable {
 
 
     @FXML
-    private ComboBox<Integer> idfourp;
+    private ComboBox<String> idfourp;
     @FXML
     private TextField inputpiece;
     @FXML
@@ -63,7 +63,7 @@ public class Piece implements Initializable {
     private Parent root;
 
     Connection con;
-    PreparedStatement pst;
+    PreparedStatement pst,pst1;
     ObservableList<Pie> list;
 
     //------------------ LOAD ON OPEN ---------------------------
@@ -73,6 +73,7 @@ public class Piece implements Initializable {
         Actualiser(list);
         setListeDeroulante();
     }
+
 
     //-------------------- Connection à la base de donnée -----------------------
     public void connect()
@@ -104,13 +105,13 @@ public class Piece implements Initializable {
         {
             if(sqlSearch.equals(""))
             {
-                pst = con.prepareStatement(sqlSearch);
-                rs = pst.executeQuery();
+                pst1 = con.prepareStatement("SELECT * FROM piece where etat = 0; ");
+                rs = pst1.executeQuery();
             }
             else
             {
-                pst = con.prepareStatement(sqlSearch);
-                rs = pst.executeQuery();
+                pst1 = con.prepareStatement(sqlSearch);
+                rs = pst1.executeQuery();
             }
 
             Pie pieces;
@@ -151,12 +152,13 @@ public class Piece implements Initializable {
     void ajoutClick(ActionEvent event)
     {
 
-        String marque,modele,serie,qte,prixunitaire ;
+        String marque,modele,serie,qte,prixunitaire , idfour = "" ;
         marque = marquepiece.getText().trim();
         modele = modelepiece.getText().trim();
         serie = seriepiece.getText().trim();
         qte = quantitepiece.getText().trim();
         prixunitaire = prixunitairep.getText().trim();
+
 
 
         if(ChampEstVide(marque, modele, serie, qte, prixunitaire))
@@ -200,7 +202,7 @@ public class Piece implements Initializable {
                         {
                             if(MMSEstUnique(marque, "marque") || MMSEstUnique(modele, "modele") || MMSEstUnique(serie, "serie"))
                             {
-                                if( idfourp.getSelectionModel().getSelectedIndex() == -1)
+                                if(idfourp.getSelectionModel().getSelectedIndex() == -1)
                                 {
                                     Message("Choisissez le fournisseur !");
                                     idfourp.requestFocus();
@@ -209,13 +211,19 @@ public class Piece implements Initializable {
                                 {
                                     try
                                     {
+                                        pst1 = con.prepareStatement("select idfour from fournisseur where nom = '" + idfourp.getSelectionModel().getSelectedItem()+"'");
+                                        ResultSet rs = pst1.executeQuery();
+                                        while (rs.next())
+                                        {
+                                            idfour = rs.getString("idfour");
+                                        }
                                         pst = con.prepareStatement("insert into piece (marque,modele,serie,qte,prixunitaire,idfour,etat) values (?,?,?,?,?,?,?)");
                                         pst.setString(1, marque);
                                         pst.setString(2, modele);
                                         pst.setString(3, serie);
                                         pst.setString(4, qte);
                                         pst.setString(5, prixunitaire);
-                                        pst.setString(6, idfourp.getSelectionModel().getSelectedItem().toString());
+                                        pst.setString(6, idfour);
                                         pst.setString(7, "0");
 
 
@@ -306,7 +314,8 @@ public class Piece implements Initializable {
         seriepiece.setText(piece.getSerie());
         prixunitairep.setText(String.valueOf(piece.getPrix()));
         quantitepiece.setText(String.valueOf(piece.getQte()));
-        idfourp.getSelectionModel().select(indexInListFournisseur(String.valueOf(piece.getIdfour())));
+        //idfourp.getSelectionModel().select(indexInListFournisseur(String.valueOf(piece.getIdfour())));
+        idfourp.getSelectionModel().select(indexInListFournisseur(String.valueOf(piece.getIdfour())));;
 
     }
 
@@ -315,7 +324,7 @@ public class Piece implements Initializable {
     void confClick(ActionEvent event)
     {
         Pie piece = table.getSelectionModel().getSelectedItem();
-        String marque,modele,serie,qte,prixunitaire, idconf ;
+        String marque,modele,serie,qte,prixunitaire, idconf, idfour = "" ;
         marque = marquepiece.getText().trim();
         modele = modelepiece.getText().trim();
         serie = seriepiece.getText().trim();
@@ -366,13 +375,20 @@ public class Piece implements Initializable {
                             {
                                 try
                                 {
+
+                                    pst1 = con.prepareStatement("select idfour from fournisseur where nom = '" + idfourp.getSelectionModel().getSelectedItem()+"'");
+                                    ResultSet rs = pst1.executeQuery();
+                                    while (rs.next())
+                                    {
+                                        idfour = rs.getString("idfour");
+                                    }
                                     pst = con.prepareStatement("update piece set marque = ? , modele = ? , serie = ? , qte = ? , prixunitaire = ? , idfour = ? where idpiece = ?");
                                     pst.setString(1, marque);
                                     pst.setString(2, modele);
                                     pst.setString(3, serie);
                                     pst.setString(4, qte);
                                     pst.setString(5, prixunitaire);
-                                    pst.setString(6, idfourp.getSelectionModel().getSelectedItem().toString());
+                                    pst.setString(6, idfour);
                                     pst.setString(7, idconf);
                                     pst.executeUpdate();
                                     Message("Pièce Modifié !!");
@@ -455,6 +471,7 @@ public class Piece implements Initializable {
             Inter inter = loader.getController();
             inter.PrintAdminName(user.getText());
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            stage.close();
             scene = new Scene(root);
             stage.setScene(scene);
             stage.show();
@@ -472,6 +489,7 @@ public class Piece implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
             root = loader.load();
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            stage.close();
             scene = new Scene(root);
             stage.setScene(scene);
             stage.show();
@@ -592,13 +610,13 @@ public class Piece implements Initializable {
     public void setListeDeroulante()
     {
         try {
-            pst = con.prepareStatement("select idfour from fournisseur");
+            pst = con.prepareStatement("select nom from fournisseur");
             ResultSet rs = pst.executeQuery();
 
 
             while (rs.next())
             {
-                idfourp.getItems().add(rs.getInt("idfour"));
+                idfourp.getItems().add(rs.getString("nom"));
             }
 
 
@@ -608,6 +626,7 @@ public class Piece implements Initializable {
             e.printStackTrace();
         }
     }
+
 
     //------------------- Marque Serie Modele est UNIQUE Modification----------------------
     public boolean MMSEstUnique(String mms, String rqt, String id)
@@ -690,28 +709,27 @@ public class Piece implements Initializable {
     {
         try
         {
-            //bech yjib juste (idfour) piece mte3 id
-            pst = con.prepareStatement("select idfour from piece where idpiece = "+id);
+            //bech yjib juste (idfour) piece mte3 nom fournisseur
+            pst = con.prepareStatement("select nom from fournisseur where idfour = "+id);
             ResultSet rs1 = pst.executeQuery();
             String s ="";
             while (rs1.next())
             {
-                s = rs1.getString("idfour");
+                s = rs1.getString("nom");
             }
 
             //bech yjib les pieces lkol w yee9if aand id
             ArrayList<String> idfo = new ArrayList<>();
-            pst = con.prepareStatement("select idfour from piece");
+            pst = con.prepareStatement("select nom from fournisseur");
             ResultSet rs = pst.executeQuery();
             while (rs.next())
             {
-                idfo.add(rs.getString("idfour"));
-                if(rs.getString("idfour").equals(s))
+                idfo.add(rs.getString("nom"));
+                if(rs.getString("nom").equals(s))
                 {
-                    return idfo.indexOf(s);
+                    return idfo.indexOf(s);// ----> yraja3 indice mte3ou fi wosset list !!!!!!!!!
                 }
             }
-
             idfo.clear();
         }
         catch (SQLException ex)

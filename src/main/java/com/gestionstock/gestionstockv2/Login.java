@@ -31,7 +31,7 @@ public class Login {
 
     private Stage stage;
     private Scene scene;
-    private Parent root,root2;
+    private Parent root;
 
 
     @FXML
@@ -195,8 +195,10 @@ public class Login {
             Inter interAdmin = loader.getController();
             interAdmin.PrintAdminName(currentuser);
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            stage.close();
             scene = new Scene(root);
             stage.setScene(scene);
+            stage.centerOnScreen();
             stage.show();
 
         }catch (IOException e) {
@@ -208,19 +210,21 @@ public class Login {
     // ------------------------ Stock Window ---------------------------
     public void StockWindow(String currentuser, ActionEvent event) throws IOException {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("entree.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("interstock.fxml"));
             root = loader.load();
-            Entree entree = loader.getController();
-            entree.PrintUserName(currentuser);
+            InterStock interStock = loader.getController();
+            interStock.PrintUserName(currentuser);
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            stage.close();
             scene = new Scene(root);
             stage.setScene(scene);
+            stage.centerOnScreen();
             stage.show();
+
 
         }catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     // ------------------------ Vendeur Window ---------------------------
@@ -231,8 +235,10 @@ public class Login {
             Inter interAdmin = loader.getController();
             interAdmin.PrintAdminName(currentuser);
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            stage.close();
             scene = new Scene(root);
             stage.setScene(scene);
+            stage.centerOnScreen();
             stage.show();
 
         }catch (IOException e) {
