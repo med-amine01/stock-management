@@ -59,7 +59,7 @@
                         <TextField fx:id="seriepiece" layoutX="10.0" layoutY="45.0" prefHeight="35.0" prefWidth="281.0" promptText="ADRESSE" />
                         <TextField fx:id="quantitepiece" layoutX="10.0" layoutY="80.0" prefHeight="35.0" prefWidth="281.0" promptText="QUANTITE" />
                         <TextField fx:id="prixunitairep" layoutX="10.0" layoutY="115.0" prefHeight="35.0" prefWidth="281.0" promptText="PRIX UNITAIRE" />
-                        <ComboBox fx:id="idfourp"  prefHeight="33.0" prefWidth="281.0" value="Choisissez le fournisseur" visibleRowCount="3">
+                        <ComboBox fx:id="idfourp" prefHeight="33.0" prefWidth="281.0" value="Choisissez le fournisseur" visibleRowCount="3">
                             <items>
                                 <FXCollections fx:factory="observableArrayList">
                                     
@@ -70,9 +70,7 @@
                 </VBox>
                 <Button layoutX="301.0" layoutY="451.0" mnemonicParsing="false" onAction="#ajoutClick" prefHeight="35.0" prefWidth="129.0" style="-fx-border-color: #43A047; -fx-border-width: 1.5px 1.5px 1.5px 1.5px;" text="Ajouter Pièce" />
                 <Button layoutX="161.0" layoutY="451.0" mnemonicParsing="false" onAction="#confClick" prefHeight="35.0" prefWidth="117.0" style="-fx-border-color: #FFC300; -fx-border-width: 1.5px 1.5px 1.5px 1.5px;" text="Modifier" />
-                <TextField fx:id="inputpiece" layoutX="14.0" layoutY="526.0" prefHeight="34.0" prefWidth="264.0" promptText="ID" />
-                <Button layoutX="300.0" layoutY="525.0" mnemonicParsing="false" onAction="#rechClick" prefHeight="36.0" prefWidth="127.0" style="-fx-border-color: #01F6FE; -fx-border-width: 2px 2px 2px 2px;" text="Rechercher" />
-                <Button layoutX="14.0" layoutY="451.0" mnemonicParsing="false" onAction="#suppClick" prefHeight="35.0" prefWidth="125.0" style="-fx-border-color: #FE0101;" text="Supprimer" />
+                <Button layoutX="14.0" layoutY="451.0" mnemonicParsing="false" onAction="#suppClick" prefHeight="35.0" prefWidth="125.0" style="-fx-border-color: #FF0000;" text="Supprimer" />
                 <Button fx:id="backBtn" layoutX="12.0" layoutY="14.0" mnemonicParsing="false" onAction="#backClick" prefHeight="24.0" prefWidth="35.0" />
                 <FontAwesomeIconView disable="true" glyphName="ARROW_LEFT" layoutX="22.0" layoutY="31.0" size="15" wrappingWidth="18.142857551574707" />
             <Button fx:id="backBtn1" layoutX="395.0" layoutY="14.0" mnemonicParsing="false" onAction="#viderClick" prefHeight="24.0" prefWidth="35.0" />
@@ -83,28 +81,30 @@
     <right>
         <AnchorPane prefHeight="700.0" prefWidth="750.0" BorderPane.alignment="CENTER">
             <children>
-                <TableView fx:id="table" layoutX="10.0" layoutY="53.0" onMouseClicked="#ligneClick" prefHeight="618.0" prefWidth="730.0">
+                <TableView fx:id="table" layoutX="26.0" layoutY="106.0" onMouseClicked="#ligneClick" prefHeight="565.0" prefWidth="706.0">
                     <columns>
-                        <TableColumn fx:id="IDcol" prefWidth="55.0" text="ID" />
-                        <TableColumn fx:id="MARcol" prefWidth="105.0" text="MARQUE" />
-                        <TableColumn fx:id="MODcol" prefWidth="110.0" text="MODELE" />
-                        <TableColumn fx:id="SERcol" prefWidth="131.0" text="SERIE" />
-                  <TableColumn fx:id="QTEcol" prefWidth="101.0" text="QUANTITE" />
-                  <TableColumn fx:id="PRIXcol" prefWidth="112.0" text="PRIX UNITAIRE" />
-                  <TableColumn fx:id="FOURcol" prefWidth="114.0" text="FOURNISSEUR" />
+                        <TableColumn fx:id="IDcol" prefWidth="50.0" text="ID" />
+                        <TableColumn fx:id="MARcol" prefWidth="100.0" text="MARQUE" />
+                        <TableColumn fx:id="MODcol" prefWidth="100.0" text="MODELE" />
+                        <TableColumn fx:id="SERcol" prefWidth="100.0" text="SERIE" />
+                  <TableColumn fx:id="QTEcol" prefWidth="95.0" text="QUANTITE" />
+                  <TableColumn fx:id="PRIXcol" prefWidth="130.0" text="PRIX UNITAIRE" />
+                  <TableColumn fx:id="FOURcol" prefWidth="130.0" text="FOURNISSEUR" />
                     </columns>
                     <opaqueInsets>
                         <Insets />
                     </opaqueInsets>
                 </TableView>
-                <FontAwesomeIconView glyphName="USER" layoutX="37.0" layoutY="30.0" size="25" />
+                <FontAwesomeIconView glyphName="USER" layoutX="28.0" layoutY="31.0" size="25" />
                 <Button fx:id="dec" layoutX="691.0" layoutY="12.0" mnemonicParsing="false" onAction="#decClick" prefHeight="24.0" prefWidth="38.0" />
                 <FontAwesomeIconView disable="true" glyphName="LOCK" layoutX="704.0" layoutY="31.0" size="20" />
-                <Label fx:id="user" layoutX="66.0" layoutY="9.0" prefHeight="29.0" prefWidth="219.0" text="Label">
+                <Label fx:id="user" layoutX="57.0" layoutY="10.0" prefHeight="29.0" prefWidth="219.0" text="Label">
                     <font>
                         <Font name="System Bold" size="16.0" />
                     </font>
                 </Label>
+                <TextField fx:id="inputpiece" layoutX="28.0" layoutY="58.0" prefHeight="34.0" prefWidth="264.0" promptText="ID" />
+                <Button layoutX="331.0" layoutY="58.0" mnemonicParsing="false" onAction="#rechClick" prefHeight="36.0" prefWidth="127.0" style="-fx-border-color: #01F6FE; -fx-border-width: 2px 2px 2px 2px;" text="Rechercher" />
             </children>
         </AnchorPane>
     </right>

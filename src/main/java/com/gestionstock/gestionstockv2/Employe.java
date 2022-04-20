@@ -324,6 +324,7 @@ public class Employe implements Initializable {
                         pst.setString(8, String.valueOf(employe.getId()));
                         pst.executeUpdate();
                         Message("Employé Modifié !!");
+                        viderClick(event);
                         list = getEmployees();
                         Actualiser(list);
                         inputEmp.requestFocus();

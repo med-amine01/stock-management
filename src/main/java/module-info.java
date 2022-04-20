@@ -10,6 +10,7 @@ module com.gestionstock.gestionstockv2 {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires java.sql;
+    requires mysql.connector.java;
 
     opens com.gestionstock.gestionstockv2 to javafx.fxml;
     exports com.gestionstock.gestionstockv2;

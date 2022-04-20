@@ -57,7 +57,7 @@
                   <Font size="18.0" />
                </font>
             </Button>
-            <Button fx:id="entreeBtn" layoutX="25.0" layoutY="341.0" mnemonicParsing="false" onAction="#entreeClick" prefHeight="40.0" prefWidth="350.0" style="-fx-background-color: #054468;" text="Gérer Les Enrtées" textAlignment="CENTER" textFill="WHITE">
+            <Button fx:id="entreeBtn" layoutX="25.0" layoutY="341.0" mnemonicParsing="false" onAction="#entreeClick" prefHeight="40.0" prefWidth="350.0" style="-fx-background-color: #054468;" text="Gérer Les Entrées" textAlignment="CENTER" textFill="WHITE">
                <font>
                   <Font size="18.0" />
                </font>

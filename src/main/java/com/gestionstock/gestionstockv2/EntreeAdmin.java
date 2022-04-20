@@ -18,7 +18,6 @@ import javafx.util.StringConverter;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,7 +29,7 @@ import java.util.ResourceBundle;
 
 import static java.lang.Integer.parseInt;
 
-public class Entree implements Initializable {
+public class EntreeAdmin implements Initializable {
 
 
 
@@ -66,7 +65,10 @@ public class Entree implements Initializable {
     private TableColumn<Ent,Integer> PIECEcol;
     @FXML
     private TableColumn<Ent,Integer> QTENTcol;
-
+    @FXML
+    private TableColumn<Ent, String> confCol;
+    @FXML
+    private CheckBox cbConfirmEnt;
     @FXML
     private Label mntTot;
 
@@ -92,7 +94,7 @@ public class Entree implements Initializable {
     private Parent root;
 
     Connection con;
-    PreparedStatement pst,pst1,pst2,pst3;
+    PreparedStatement pst,pst1,pst2,pst4;
     ObservableList<Pie> listPiece;
     ObservableList<Ent> listEntree;
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
@@ -102,7 +104,6 @@ public class Entree implements Initializable {
 
         datePicker.setPromptText(LocalDate.now().format(dateFormatter));
         datePicker.setConverter(new StringConverter<>() {
-
             @Override
             public String toString(LocalDate date) {
                 if (date != null) {
@@ -128,9 +129,9 @@ public class Entree implements Initializable {
         ActualiserPiece(listPiece);
         ActualiserEntree(listEntree);
         setListeDeroulante();
+        montantTotale();
 
         Timer();
-        montantTotale();
     }
 
 
@@ -207,8 +208,18 @@ public class Entree implements Initializable {
 
             if(sqlSearch.equals(""))
             {
-                pst = con.prepareStatement("select entree.* , fournisseur.nom from entree,fournisseur where entree.idfour = fournisseur.idfour and entree.etat = 0");
-                rs= pst.executeQuery();
+                if(!cbConfirmEnt.isSelected())
+                {
+                    pst = con.prepareStatement("select entree.* , fournisseur.nom from entree,fournisseur " +
+                            "where entree.idfour = fournisseur.idfour and entree.etat = 0");
+                    rs= pst.executeQuery();
+                }
+                else
+                {
+                    pst = con.prepareStatement("select entree.* , fournisseur.nom from entree,fournisseur " +
+                            "where entree.idfour = fournisseur.idfour and entree.etat = 0 and entree.confirmEntree ='NoConfirm'");
+                    rs= pst.executeQuery();
+                }
             }
             else
             {
@@ -225,7 +236,8 @@ public class Entree implements Initializable {
                         rs.getString("nom"),
                         rs.getInt("qte"),
                         rs.getString("date"),
-                        rs.getDouble("montant"));
+                        rs.getDouble("montant"),
+                        rs.getString("confirmEntree"));
                 entreeList.add(entrees);
             }
         }
@@ -257,6 +269,7 @@ public class Entree implements Initializable {
         QTENTcol.setCellValueFactory(new PropertyValueFactory<Ent,Integer>("qte"));
         DATEcol.setCellValueFactory(new PropertyValueFactory<Ent,String>("date"));
         MONTcol.setCellValueFactory(new PropertyValueFactory<Ent,Double>("montant"));
+        confCol.setCellValueFactory(new PropertyValueFactory<Ent,String>("confent"));
 
         tableEntree.setItems(list);
     }
@@ -291,62 +304,115 @@ public class Entree implements Initializable {
                 }
                 else
                 {
-                    try
+                    Ent ent = tableEntree.getSelectionModel().getSelectedItem(); //to get id of entree
+                    if(ent.getConfent().equals("NoConfirm"))
                     {
-                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                        alert.setHeaderText("Confirmation de l'entree");
-                        alert.setContentText("êtes vous sûr d'ajouter la quantité <"+qtee+"> ?");
+                        try
+                        {
+                            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                            alert.setHeaderText("Confirmation de l'entree");
+                            alert.setContentText("êtes vous sûr d'ajouter la quantité <"+qtee+"> au stock principal de la pièce <"+piece.getText()+"> ?\n" +
+                                    "FOURNISSEUR : <"+fournisseur.getSelectionModel().getSelectedItem()+">");
 
-                        Optional<ButtonType> r = alert.showAndWait();
-                        if (r.get() == ButtonType.OK){
-                            pst1 = con.prepareStatement("select prixunitaire from piece where idpiece ="+piece.getText()+";");
-                            ResultSet rs1 = pst1.executeQuery();
+                            Optional<ButtonType> r = alert.showAndWait();
+                            if (r.get() == ButtonType.OK){
+                                pst1 = con.prepareStatement("select prixunitaire from piece where idpiece ="+piece.getText()+";");
+                                ResultSet rs1 = pst1.executeQuery();
 
-//                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/YYYY-hh:mm:ss");
-//                            LocalDateTime dateTime = LocalDateTime.now();
-                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
-                            LocalDate d = LocalDate.now();
-                            String currentDate = d.format(formatter).concat("-").concat(String.valueOf(LocalTime.now()));
-
-                            pst2 = con.prepareStatement("select idfour from fournisseur where nom ='"+fournisseur.getSelectionModel().getSelectedItem()+"';");
-                            ResultSet rs2 = pst2.executeQuery();
-
-                            pst3 = con.prepareStatement("select idemp from employe where nom ='"+user.getText()+"';");
-                            ResultSet rs3 = pst3.executeQuery();
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
+                                LocalDate d = LocalDate.now();
+                                String currentDate = d.format(formatter).concat("-").concat(String.valueOf(LocalTime.now()));
 
 
 
-                            pst = con.prepareStatement("insert into entree (qte,date,montant,idpiece,idfour,idemp,etat,confirmEntree) values (?,?,?,?,?,?,?,?)");
-                            while (rs1.next() && rs2.next() && rs3.next())
-                            {
-                                Double montant1 = (parseInt(qtee) * Double.parseDouble(rs1.getString("prixunitaire")));
+                                pst2 = con.prepareStatement("select idfour from fournisseur where nom ='"+fournisseur.getSelectionModel().getSelectedItem()+"';");
+                                ResultSet rs2 = pst2.executeQuery();
 
-                                pst.setString(1, qtee);
-                                pst.setString(2, currentDate);
-                                pst.setDouble(3, Double.parseDouble(new DecimalFormat("####.###").format(montant1)));
-                                pst.setString(4, piece.getText());
-                                pst.setString(5, rs2.getString("idfour"));
-                                pst.setString(6, rs3.getString("idemp"));
-                                pst.setString(7,"0");
-                                pst.setString(8,"NoConfirm");
-                                pst.executeUpdate();
-                                Message("entrée Ajoutée !!");
-                                listEntree = getEntree("");
-                                ActualiserEntree(listEntree);
-                                viderClick(event);
-                                montantTotale();
+
+
+                                pst = con.prepareStatement("update entree set qte = ? , date = ? , montant = ? , idpiece = ? , " +
+                                        "idfour = ? , etat = ?,confirmEntree = ? where identree = ?");
+
+
+                                pst4 = con.prepareStatement("update piece set qte = qte + ? where idpiece = ?");
+                                pst4.setString(1,qtee);
+                                pst4.setString(2,piece.getText());
+                                pst4.executeUpdate();
+
+                                while (rs1.next() && rs2.next())
+                                {
+                                    Double montant1 = (parseInt(qtee) * Double.parseDouble(rs1.getString("prixunitaire")));
+
+                                    pst.setString(1, qtee);
+                                    pst.setString(2, currentDate);
+                                    pst.setDouble(3, Double.parseDouble(new DecimalFormat("####.###").format(montant1)));
+                                    pst.setString(4, piece.getText());
+                                    pst.setString(5, rs2.getString("idfour"));
+                                    pst.setString(6,"0");
+                                    pst.setString(7,"ADMIN : "+user.getText());
+                                    pst.setString(8,String.valueOf(ent.getId()));
+                                    pst.executeUpdate();
+                                    Message("L'entrée est ajoutée au stock avec succès !!");
+                                    listEntree = getEntree("");
+                                    ActualiserEntree(listEntree);
+                                    listPiece = getPieces("");
+                                    ActualiserPiece(listPiece);
+                                    viderClick(event);
+                                    montantTotale();
+                                }
                             }
-                        }
 
+                        }
+                        catch (SQLException e1)
+                        {
+                            e1.printStackTrace();
+                        }
                     }
-                    catch (SQLException e1)
+                    else
                     {
-                        e1.printStackTrace();
+                        Message("L'entrée déjà confirmée !");
                     }
                 }
             }
         }
 
+    }
+
+    @FXML
+    void suppClick(ActionEvent event)
+    {
+        Ent entree = tableEntree.getSelectionModel().getSelectedItem();
+        String id ="";
+        try {
+            id = String.valueOf(entree.getId());
+        }catch (Exception e)
+        {
+            Message("Veuillez sélectionner une entree !");
+        }
+        if(id.equals(""))
+        {
+            Message("Impossible De Supprimer");
+            viderClick(event);
+        }
+        else
+        {
+            try
+            {
+                pst = con.prepareStatement("update entree set etat = ? where identree = ? ");
+                pst.setString(1, "1");
+                pst.setString(2, id);
+                pst.executeUpdate();
+                Message("Entree Supprimée !!");
+                listEntree = getEntree("");
+                ActualiserEntree(listEntree);
+                montantTotale();
+                viderClick(event);
+            }
+            catch (SQLException e1)
+            {
+                e1.printStackTrace();
+            }
+        }
     }
 
 
@@ -406,46 +472,10 @@ public class Entree implements Initializable {
                 Integer.parseInt(day),
                 Integer.parseInt(heure),
                 Integer.parseInt(min),
-                sectoDouble.intValue()};
+                sectoDouble.intValue() };
 
         return tabdatetime;
 
-    }
-
-    @FXML
-    void backClick(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("interstock.fxml"));
-            root = loader.load();
-            InterStock interStock = loader.getController();
-            interStock.PrintUserName(user.getText());
-            stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
-            stage.close();
-            scene = new Scene(root);
-            stage.setScene(scene);
-            stage.centerOnScreen();
-            stage.show();
-
-        }catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    @FXML
-    void decClick(ActionEvent event)
-    {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
-            root = loader.load();
-            stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
-            scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-
-        }catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     //-------------- CALCULE MONTANT TOLTALE DES ENTRÉES ------------
@@ -468,6 +498,43 @@ public class Entree implements Initializable {
         }
     }
 
+    @FXML
+    void backClick(ActionEvent event)
+    {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("inter.fxml"));
+            root = loader.load();
+            Inter inter = loader.getController();
+            inter.PrintAdminName(user.getText());
+            stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            stage.close();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.show();
+
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    void decClick(ActionEvent event)
+    {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
+            root = loader.load();
+            stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     //-------------------- LIGNE PIECE CLICK ---------------------
     @FXML
     void lignePieceClick(MouseEvent event)
@@ -475,8 +542,24 @@ public class Entree implements Initializable {
         try {
             Pie pie = tablePiece.getSelectionModel().getSelectedItem();
             piece.setText(String.valueOf(pie.getIdpiece()));
-            fournisseur.getSelectionModel().select(indexInListFournisseur(String.valueOf(pie.getIdfour())));;
-            qte.setText("0");
+        }catch (NullPointerException e)
+        {
+            Message("Aucune ligne n'est sélectionnée");
+        }
+
+    }
+
+
+
+    //-------------------- LIGNE PIECE CLICK ---------------------
+    @FXML
+    void entreeClick(MouseEvent event)
+    {
+        try {
+            Ent ent = tableEntree.getSelectionModel().getSelectedItem();
+            piece.setText(String.valueOf(ent.getIdpiece()));
+            fournisseur.getSelectionModel().select(indexInListFournisseur(String.valueOf(ent.getIdfour())));;
+            qte.setText(String.valueOf(ent.getQte()));
             date.setText(LocalDate.now().format(dateFormatter));
         }catch (NullPointerException e)
         {
@@ -493,21 +576,34 @@ public class Entree implements Initializable {
         String date = dateClick(event);
         Timer();
 
-        if(rech.equals(""))
+        if(rech.equals("")) // if la recherche est vide on va lister tous les entrées peu importe l'id , date ...
         {
-            if(date.equals(""))
+            if(date.equals("")) //if la date est vide on va lister tous les entrées peu importe la date
             {
-                String rqt = "select entree.* , fournisseur.nom from entree,fournisseur where entree.idfour = fournisseur.idfour and entree.etat = 0 " +
-                        "HAVING date like '"+LocalDate.now().format(dateFormatter)+"%'";
-                listEntree = getEntree(rqt);
-                ActualiserEntree(listEntree);
+                if(cbConfirmEnt.isSelected()) // if le chechbox est selectionné on va afficher tous les entrées qui sont déjà confirmé par (Timer, admin)
+                {
+                    String rqt = "select entree.* , fournisseur.nom from entree,fournisseur where entree.idfour = fournisseur.idfour and entree.etat = 0 " +
+                            "HAVING date like '"+LocalDate.now().format(dateFormatter)+"%' and confirmEntree != 'NoConfirm'";
+                    //                                                                                       ==================
+                    listEntree = getEntree(rqt);
+                    ActualiserEntree(listEntree);
+                }
+                else // non selectionné
+                {
+                    String rqt = "select entree.* , fournisseur.nom from entree,fournisseur where entree.idfour = fournisseur.idfour and entree.etat = 0 " +
+                            "HAVING date like '"+LocalDate.now().format(dateFormatter)+"%' and confirmEntree = 'NoConfirm'";
+                    listEntree = getEntree(rqt);
+                    ActualiserEntree(listEntree);
+                }
+
             }
-            else
+            else // la date est selectionnée
             {
                 String rqt = "select entree.* , fournisseur.nom from entree,fournisseur where entree.idfour = fournisseur.idfour and entree.etat = 0 " +
                         "HAVING date like '"+date+"%'";
                 listEntree = getEntree(rqt);
                 ActualiserEntree(listEntree);
+
             }
 
         }
@@ -516,7 +612,7 @@ public class Entree implements Initializable {
             if(ChampsIdEstInt(rech)) //3RAFNA ELI HOA YFARKESS BEL ID
             {
                 String rqt = "select entree.* , fournisseur.nom from entree, fournisseur " +
-                "where entree.idfour = fournisseur.idfour and date like '"+date+"%' and entree.etat = 0 HAVING identree = "+rech;
+                        "where entree.idfour = fournisseur.idfour and date like '"+date+"%' and entree.etat = 0 HAVING identree = "+rech;
                 listEntree = getEntree(rqt);
 
                 if(listEntree.isEmpty())
@@ -533,7 +629,7 @@ public class Entree implements Initializable {
             else
             {
                 String rqt = "select entree.* , fournisseur.nom from entree, fournisseur " +
-                "where entree.idfour = fournisseur.idfour and date like '"+date+"%' and entree.etat = 0 HAVING nom ="+rech;
+                        "where entree.idfour = fournisseur.idfour and date like '"+date+"%' and entree.etat = 0 HAVING fournisseur.nom like '"+rech+"%'";
                 listEntree = getEntree(rqt);
                 if(listEntree.isEmpty())
                 {

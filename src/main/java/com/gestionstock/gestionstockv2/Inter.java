@@ -51,6 +51,7 @@ public class Inter {
             Employe employe = loader.getController();
             employe.PrintUserName(user.getText());
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            stage.close();
             scene = new Scene(root);
             stage.setScene(scene);
             stage.centerOnScreen();
@@ -70,6 +71,7 @@ public class Inter {
             Piece piece = loader.getController();
             piece.PrintUserName(user.getText());
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            stage.close();
             scene = new Scene(root);
             stage.setScene(scene);
             stage.centerOnScreen();
@@ -93,7 +95,22 @@ public class Inter {
 
     @FXML
     void entreeClick(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("entreeadmin.fxml"));
+            root = loader.load();
+            EntreeAdmin entreeAdmin = loader.getController();
+            entreeAdmin.PrintUserName(user.getText());
+            entreeAdmin.Timer();
+            stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            stage.close();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.show();
 
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 

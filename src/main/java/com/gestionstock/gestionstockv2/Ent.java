@@ -9,6 +9,7 @@ public class Ent {
     private String date;
     private double montant;
     private int idfour;
+    private String confent;
 
 
     public Ent(int id, int idpiece, String nomfour, int qte, String date,double montant) {
@@ -28,6 +29,17 @@ public class Ent {
         this.date = date;
         this.montant = montant;
         this.idfour = idfour;
+    }
+
+    public Ent(int id, int idpiece, String nomfour, int qte, String date,double montant, String confent) {
+        this.id = id;
+        this.nomfour = nomfour;
+        this.idpiece = idpiece;
+        this.qte = qte;
+        this.date = date;
+        this.montant = montant;
+        this.idfour = idfour;
+        this.confent = confent;
     }
     public int getId() {
         return id;
@@ -83,5 +95,13 @@ public class Ent {
 
     public void setIdfour(int idfour) {
         this.idfour = idfour;
+    }
+
+    public String getConfent() {
+        return confent;
+    }
+
+    public void setConfent(String confent) {
+        this.confent = confent;
     }
 }
