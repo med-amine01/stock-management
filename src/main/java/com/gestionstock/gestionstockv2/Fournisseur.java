@@ -1,5 +1,6 @@
 package com.gestionstock.gestionstockv2;
 
+import Classes.Four;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;

@@ -160,9 +160,7 @@ public class Login {
                                         }
                                         else
                                         {
-                                            Message("Authentifié Vendeur");
-                                            //VendeurWindow(id);
-                                            //frameLogin.dispose();
+                                            VendeurWindow(rs.getString("nom"), event);
                                         }
                                     }
                                 }
@@ -230,10 +228,10 @@ public class Login {
     // ------------------------ Vendeur Window ---------------------------
     public void VendeurWindow(String currentuser, ActionEvent event) throws IOException {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("inter.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("intervendeur.fxml"));
             root = loader.load();
-            Inter interAdmin = loader.getController();
-            interAdmin.PrintAdminName(currentuser);
+            InterVendeur interVendeur = loader.getController();
+            interVendeur.PrintUserName(currentuser);
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
             stage.close();
             scene = new Scene(root);
@@ -355,12 +353,12 @@ public class Login {
                     // stock window
                     if(post.equals("Stock"))
                     {
-                       //StockWindow(CurentUser, event);
+                       StockWindow(CurentUser, event);
                     }
                     //vendeur window
                     if(post.equals("Vendeur"))
                     {
-                       //VendeurWindow(CurentUser, event);
+                       VendeurWindow(CurentUser, event);
                     }
                 }
                 catch (SQLException ex)

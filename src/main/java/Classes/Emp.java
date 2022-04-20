@@ -1,4 +1,4 @@
-package com.gestionstock.gestionstockv2;
+package Classes;
 
 public class Emp {
     private int id;

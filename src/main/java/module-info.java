@@ -14,4 +14,6 @@ module com.gestionstock.gestionstockv2 {
 
     opens com.gestionstock.gestionstockv2 to javafx.fxml;
     exports com.gestionstock.gestionstockv2;
+    exports Classes;
+    opens Classes to javafx.fxml;
 }
