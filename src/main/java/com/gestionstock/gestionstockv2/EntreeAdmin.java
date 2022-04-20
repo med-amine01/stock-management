@@ -464,7 +464,7 @@ public class EntreeAdmin implements Initializable {
         String heure = splitTime[0];
         String min = splitTime[1];
         String sec = splitTime[2];
-        Double sectoDouble = Double.parseDouble(sec);
+        Double sectoDouble = Double.parseDouble(sec); //10.354818
 
         int [] tabdatetime = {
                 Integer.parseInt(year),
@@ -472,7 +472,7 @@ public class EntreeAdmin implements Initializable {
                 Integer.parseInt(day),
                 Integer.parseInt(heure),
                 Integer.parseInt(min),
-                sectoDouble.intValue() };
+                sectoDouble.intValue() }; //10
 
         return tabdatetime;
 
@@ -489,7 +489,7 @@ public class EntreeAdmin implements Initializable {
 
             while (rs.next())
             {
-                mntTot.setText(Double.parseDouble(new DecimalFormat("#####.####").format(rs.getDouble("SUM(montant)")))+" DT");
+                mntTot.setText(Double.parseDouble(new DecimalFormat("#####.####").format(rs.getDouble("SUM(montant)")).replace(',' , '.'))+" DT");
             }
         }
         catch (SQLException ex)

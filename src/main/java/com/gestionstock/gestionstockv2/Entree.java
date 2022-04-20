@@ -304,9 +304,9 @@ public class Entree implements Initializable {
 
 //                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/YYYY-hh:mm:ss");
 //                            LocalDateTime dateTime = LocalDateTime.now();
-                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
-                            LocalDate d = LocalDate.now();
-                            String currentDate = d.format(formatter).concat("-").concat(String.valueOf(LocalTime.now()));
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/YYYY"); // 16 4 pm 20/04/2022
+                            LocalDate d = LocalDate.now(); //
+                            String currentDate = d.format(formatter).concat("-").concat(String.valueOf(LocalTime.now())); //15
 
                             pst2 = con.prepareStatement("select idfour from fournisseur where nom ='"+fournisseur.getSelectionModel().getSelectedItem()+"';");
                             ResultSet rs2 = pst2.executeQuery();
@@ -319,11 +319,14 @@ public class Entree implements Initializable {
                             pst = con.prepareStatement("insert into entree (qte,date,montant,idpiece,idfour,idemp,etat,confirmEntree) values (?,?,?,?,?,?,?,?)");
                             while (rs1.next() && rs2.next() && rs3.next())
                             {
-                                Double montant1 = (parseInt(qtee) * Double.parseDouble(rs1.getString("prixunitaire")));
+                                //Double montant1 = (parseInt(qtee) * Double.parseDouble(rs1.getString("prixunitaire")));
+
+                                Double montant1 = parseInt(qtee) * rs1.getDouble("prixunitaire");
 
                                 pst.setString(1, qtee);
                                 pst.setString(2, currentDate);
-                                pst.setDouble(3, Double.parseDouble(new DecimalFormat("####.###").format(montant1)));
+                                pst.setDouble(3, Double.parseDouble(new DecimalFormat("####.###").format(montant1).replace(',' , '.')));
+                                //pst.setDouble(3, montant1);
                                 pst.setString(4, piece.getText());
                                 pst.setString(5, rs2.getString("idfour"));
                                 pst.setString(6, rs3.getString("idemp"));
@@ -459,7 +462,8 @@ public class Entree implements Initializable {
 
             while (rs.next())
             {
-                mntTot.setText(Double.parseDouble(new DecimalFormat("#####.####").format(rs.getDouble("SUM(montant)")))+" DT");
+                mntTot.setText(Double.parseDouble(new DecimalFormat("#####.####").format(rs.getDouble("SUM(montant)"))
+                        .replace(',' , '.'))+" DT");
             }
         }
         catch (SQLException ex)
