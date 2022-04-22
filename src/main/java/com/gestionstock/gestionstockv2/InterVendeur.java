@@ -40,7 +40,20 @@ public class InterVendeur implements Initializable {
 
     @FXML
     void clientClick(ActionEvent event) {
-
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("client.fxml"));
+            root = loader.load();
+            Client client = loader.getController();
+            client.PrintUserName(user.getText());
+            stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.show();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML

@@ -12,27 +12,32 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gestionstock.gestionstockv2.Fournisseur">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gestionstock.gestionstockv2.Client">
     <left>
         <AnchorPane prefHeight="700.0" prefWidth="450.0" style="-fx-background-color: #054468;" BorderPane.alignment="CENTER">
             <children>
-                <VBox layoutX="14.0" layoutY="115.0" prefHeight="234.0" prefWidth="135.0" spacing="40.0">
+                <VBox layoutX="14.0" layoutY="115.0" prefHeight="238.0" prefWidth="135.0" spacing="35.0">
                     <children>
-                        <Label text="Nom Fournisseur" textFill="WHITE">
+                        <Label text="Nom Client" textFill="WHITE">
                             <font>
                                 <Font size="15.0" />
                             </font>
                         </Label>
+                  <Label layoutX="10.0" layoutY="10.0" text="Prenom Client" textFill="WHITE">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
                         <Label text="Adresse" textFill="WHITE">
                             <font>
                                 <Font size="15.0" />
                             </font>
                         </Label>
-                        <Label text="Teléphone" textFill="WHITE">
-                            <font>
-                                <Font size="15.0" />
-                            </font>
-                        </Label>
+                  <Label layoutX="10.0" layoutY="159.0" text="Telephone" textFill="WHITE">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
                         <Label layoutX="10.0" layoutY="67.0" text="Mail" textFill="WHITE">
                             <font>
                                 <Font size="15.0" />
@@ -40,21 +45,22 @@
                         </Label>
                     </children>
                 </VBox>
-                <VBox layoutX="153.0" layoutY="115.0" prefHeight="244.0" prefWidth="282.0" spacing="25.0">
+                <VBox layoutX="153.0" layoutY="115.0" prefHeight="244.0" prefWidth="282.0" spacing="30.0">
                     <children>
-                        <TextField fx:id="nomFour" prefHeight="35.0" prefWidth="281.0" promptText="NOM" />
-                        <TextField fx:id="addFour" layoutX="10.0" layoutY="10.0" prefHeight="35.0" prefWidth="281.0" promptText="ADRESSE" />
-                        <TextField fx:id="telFour" layoutX="10.0" layoutY="45.0" prefHeight="35.0" prefWidth="281.0" promptText="TELEPHONE" />
-                        <TextField fx:id="mailFour" layoutX="10.0" layoutY="80.0" prefHeight="35.0" prefWidth="281.0" promptText="nom@domain.ext" />
+                        <TextField fx:id="nomClient" minWidth="-Infinity" prefHeight="50.0" prefWidth="282.0" promptText="NOM" />
+                  <TextField fx:id="prenomClient" layoutX="10.0" layoutY="10.0" prefHeight="40.0" prefWidth="281.0" promptText="PRENOM" />
+                        <TextField fx:id="addClient" layoutX="10.0" layoutY="10.0" prefHeight="40.0" prefWidth="281.0" promptText="ADRESSE" />
+                  <TextField fx:id="telClient" layoutX="10.0" layoutY="152.0" prefHeight="40.0" prefWidth="281.0" promptText="TELEPHONE" />
+                        <TextField fx:id="mailClient" layoutX="10.0" layoutY="80.0" prefHeight="40.0" prefWidth="281.0" promptText="nom@domain.ext" />
                     </children>
                 </VBox>
-                <Button layoutX="310.0" layoutY="408.0" mnemonicParsing="false" onAction="#ajoutClick" prefHeight="36.0" prefWidth="125.0" style="-fx-border-color: #43A047; -fx-border-width: 1.5px 1.5px 1.5px 1.5px;" text="AJOUTER" />
-                <Button layoutX="14.0" layoutY="408.0" mnemonicParsing="false" onAction="#suppClick" prefHeight="36.0" prefWidth="125.0" style="-fx-border-color: #FE0101;" text="SUPPRIMER" />
-                <Button layoutX="162.0" layoutY="408.0" mnemonicParsing="false" onAction="#modClick" prefHeight="36.0" prefWidth="125.0" style="-fx-border-color: #FEAA01; -fx-border-width: 1.5px 1.5px 1.5px 1.5px;" text="MODIFIER" />
+                <Button layoutX="310.0" layoutY="462.0" mnemonicParsing="false" onAction="#ajoutClick" prefHeight="36.0" prefWidth="125.0" style="-fx-border-color: #43A047; -fx-border-width: 1.5px 1.5px 1.5px 1.5px;" text="AJOUTER" />
+                <Button layoutX="14.0" layoutY="462.0" mnemonicParsing="false" onAction="#suppClick" prefHeight="36.0" prefWidth="125.0" style="-fx-border-color: #FE0101;" text="SUPPRIMER" />
+                <Button layoutX="162.0" layoutY="462.0" mnemonicParsing="false" onAction="#modClick" prefHeight="36.0" prefWidth="125.0" style="-fx-border-color: #FEAA01; -fx-border-width: 1.5px 1.5px 1.5px 1.5px;" text="MODIFIER" />
                 <Button fx:id="backBtn" layoutX="12.0" layoutY="14.0" mnemonicParsing="false" onAction="#backClick" prefHeight="24.0" prefWidth="35.0" />
                 <FontAwesomeIconView disable="true" glyphName="ARROW_LEFT" layoutX="22.0" layoutY="31.0" size="15" wrappingWidth="18.142857551574707" />
-            <Button layoutX="398.0" layoutY="13.0" mnemonicParsing="false" onAction="#viderClick" prefHeight="24.0" prefWidth="35.0" />
-            <FontAwesomeIconView disable="true" glyphName="REMOVE" layoutX="409.0" layoutY="32.0" size="16" text="" />
+                <Button layoutX="398.0" layoutY="13.0" mnemonicParsing="false" onAction="#viderClick" prefHeight="24.0" prefWidth="35.0" />
+                <FontAwesomeIconView disable="true" glyphName="REMOVE" layoutX="409.0" layoutY="32.0" size="16" text="" />
             </children>
         </AnchorPane>
     </left>
@@ -64,10 +70,11 @@
                 <TableView fx:id="table" layoutX="20.0" layoutY="118.0" onMouseClicked="#ligneClick" prefHeight="567.0" prefWidth="720.0">
                     <columns>
                         <TableColumn fx:id="IDcol" prefWidth="55.0" text="ID" />
-                        <TableColumn fx:id="NOMcol" prefWidth="128.79999542236328" text="NOM" />
-                        <TableColumn fx:id="ADRESSEcol" prefWidth="175.99993896484375" text="ADRESSE" />
-                        <TableColumn fx:id="TELcol" prefWidth="158.93331909179688" text="TELEPHONE" />
-                        <TableColumn fx:id="MAILcol" prefWidth="213.5999755859375" text="MAIL" />
+                        <TableColumn fx:id="NOMcol" prefWidth="120.0" text="NOM" />
+                        <TableColumn fx:id="PRENOMcol" prefWidth="120.0" text="PRENOM" />
+                        <TableColumn fx:id="ADDcol" prefWidth="160.0" text="ADRESSE" />
+                  <TableColumn fx:id="TELcol" prefWidth="130.0" text="TELEPHONE" />
+                  <TableColumn fx:id="MAILcol" prefWidth="130.0" text="MAIL" />
                     </columns>
                     <opaqueInsets>
                         <Insets />
@@ -81,7 +88,7 @@
                         <Font name="System Bold" size="16.0" />
                     </font>
                 </Label>
-                <TextField fx:id="inputFour" layoutX="20.0" layoutY="64.0" prefHeight="36.0" prefWidth="274.0" promptText="ID" />
+                <TextField fx:id="inputClient" layoutX="20.0" layoutY="64.0" prefHeight="36.0" prefWidth="274.0" promptText="ID" />
                 <Button layoutX="317.0" layoutY="64.0" mnemonicParsing="false" onAction="#rechClick" prefHeight="36.0" prefWidth="125.0" style="-fx-border-color: #01F6FE; -fx-border-width: 2px 2px 2px 2px;" text="Rechercher" />
             </children>
         </AnchorPane>
