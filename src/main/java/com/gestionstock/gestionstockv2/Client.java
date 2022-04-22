@@ -70,7 +70,7 @@ public class Client implements Initializable {
     //------------------ LOAD ON OPEN ---------------------------
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        list = getClients();
+        list = getClients("");
         Actualiser(list);
     }
     //-------------------- Connection à la base de donnée -----------------------
@@ -79,7 +79,6 @@ public class Client implements Initializable {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection("jdbc:mysql://localhost/gestionstock", "root","");
-            System.out.println("Connecté !!");
 
         }
         catch (ClassNotFoundException ex)
@@ -92,45 +91,32 @@ public class Client implements Initializable {
             ex.printStackTrace();
         }
     }
-    //---------------------- chargement du tableau dans une liste-----------------------------
-    public ObservableList<Clnt> getClients()
-    {
-        ObservableList<Clnt> clientList = FXCollections.observableArrayList();
-        connect();
-        try
-        {
-            pst = con.prepareStatement("select idclient,nom,prenom,tel,mail,adresse from client where etat = 0");
-            ResultSet rs = pst.executeQuery();
-            Clnt clients;
 
-            while (rs.next())
-            {
-                clients = new Clnt(rs.getInt("idclient"), rs.getString("nom"),rs.getString("prenom"), rs.getString("tel"),rs.getString("mail"),
-                        rs.getString("adresse"));
-                clientList.add(clients);
-            }
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-
-        return clientList;
-    }
     //---------------------- chargement du tableau dans une liste (Search)-----------------------------
     public ObservableList<Clnt> getClients(String sqlSearch)
     {
         ObservableList<Clnt> clientList = FXCollections.observableArrayList();
         connect();
+        ResultSet rs;
         try
         {
-            pst = con.prepareStatement(sqlSearch);
-            ResultSet rs = pst.executeQuery();
+            if(sqlSearch.equals(""))
+            {
+                pst = con.prepareStatement("select * from client where etat = 0");
+                rs= pst.executeQuery();
+            }
+            else
+            {
+                pst = con.prepareStatement(sqlSearch);
+                rs = pst.executeQuery();
+            }
+
             Clnt clients;
 
             while (rs.next())
             {
-                clients = new Clnt(rs.getInt("idclient"), rs.getString("nom"), rs.getString("prenom"),rs.getString("tel"),
+                clients = new Clnt(rs.getInt("idclient"), rs.getString("nom"),
+                        rs.getString("prenom"),rs.getString("tel"),
                         rs.getString("mail"),rs.getString("adresse"));
                 clientList.add(clients);
             }
@@ -173,7 +159,7 @@ public class Client implements Initializable {
         }
         else
         {
-            if(ChampTelEstInteger(numtel) == false || numtel.length() != 8)
+            if(!ChampTelEstInteger(numtel) || numtel.length() != 8)
             {
                 Message( "Le client Déjà Existe ou Numéro Téléphone invalide");
                 telClient.setText("");
@@ -181,9 +167,9 @@ public class Client implements Initializable {
             }
             else
             {
-                if (!mail.equals(""))
+                if (!mail.equals("")) //*
                 {
-                    if(valideMail(mail) == false)
+                    if(!valideMail(mail))
                     {
                         Message("Le client Déjà Existe ou mail invalide");
                         mailClient.setText("");
@@ -202,7 +188,7 @@ public class Client implements Initializable {
                             pst.setString(6, "0");
                             pst.executeUpdate();
                             Message("Client Ajouté !!");
-                            list = getClients();
+                            list = getClients("");
                             Actualiser(list);
                             nomClient.setText("");
                             prenomClient.setText("");
@@ -230,6 +216,7 @@ public class Client implements Initializable {
                         pst.setString(6, "0");
                         pst.executeUpdate();
                         Message("Client Ajouté !!");
+                        list = getClients("");
                         Actualiser(list);
                         nomClient.setText("");
                         prenomClient.setText("");
@@ -237,6 +224,10 @@ public class Client implements Initializable {
                         mailClient.setText("");
                         addClient.setText("");
                         nomClient.requestFocus();
+                    }
+                    catch (SQLIntegrityConstraintViolationException e)
+                    {
+                        Message("le numéro téléphone déjà existe !");
                     }
                     catch (SQLException e1)
                     {
@@ -248,13 +239,21 @@ public class Client implements Initializable {
     }
     @FXML
     void ligneClick(MouseEvent event) {
-        Clnt client = table.getSelectionModel().getSelectedItem();
 
-        nomClient.setText(client.getNom());
-        prenomClient.setText(client.getPrenom());
-        telClient.setText(client.getTel());
-        mailClient.setText(client.getMail());
-        addClient.setText(client.getAdresse());
+        try {
+            Clnt client = table.getSelectionModel().getSelectedItem();
+
+            nomClient.setText(client.getNom());
+            prenomClient.setText(client.getPrenom());
+            telClient.setText(client.getTel());
+            mailClient.setText(client.getMail());
+            addClient.setText(client.getAdresse());
+        }
+        catch (NullPointerException e)
+        {
+            Message("Veuillez sélectionner un client !");
+        }
+
     }
     @FXML
     void modClick(ActionEvent event) {
@@ -268,14 +267,14 @@ public class Client implements Initializable {
 
 
 
-        if(ChampEstVide(nom,prenom,adresse,tel,mail))
+        if(ChampEstVide(nom,prenom,adresse,tel,mail)) //test mail
         {
             Message( "Verifiez Les Champs !!");
             nomClient.requestFocus();
         }
         else
         {
-            if(ChampTelEstInteger(tel) == false)// || telEstUnique(tel,idconf) == false)
+            if(!ChampTelEstInteger(tel))// || telEstUnique(tel,idconf) == false)
             {
                 Message("Verifiez Le Numéro du Téléphone !!");
                 telClient.setText("");
@@ -283,7 +282,8 @@ public class Client implements Initializable {
             }
             else
             {
-                if (valideMail(mail) == false)//|| MailEstUnique(mail,idconf) == false  )
+                //------------- test mail ici | remove mail champ est vide
+                if (!valideMail(mail))
                 {
                     Message("client Déjà Existe ou  mail invalide");
                     mailClient.setText("");
@@ -304,7 +304,7 @@ public class Client implements Initializable {
                         pst.executeUpdate();
                         Message("client Modifié !!");
                         viderClick(event);
-                        list = getClients();
+                        list = getClients("");
                         Actualiser(list);
                         inputClient.requestFocus();
 
@@ -319,14 +319,7 @@ public class Client implements Initializable {
     @FXML
     void suppClick(ActionEvent event) {
         Clnt client = table.getSelectionModel().getSelectedItem();
-        String id ="";
-        String res = "";
-        try {
-            id = String.valueOf(client.getIdclient());
-        }catch (Exception e)
-        {
-            res = "Veuillez sélectionner un fournisseur !";
-        }
+        String id =String.valueOf(client.getIdclient());
 
 
         if(id.equals(""))
@@ -352,12 +345,13 @@ public class Client implements Initializable {
                     {
                         try
                         {
-                            pst = con.prepareStatement("update client set etat = ? where idclient = ? ");
+                            pst = con.prepareStatement("update client set etat = ? , tel = ? where idclient = ? ");
                             pst.setString(1, "1");
-                            pst.setString(2, id);
+                            pst.setString(2,telClient.getText().concat("-").concat(String.valueOf((int) ((Math.random() * (9999999 - 1)) + 1))));
+                            pst.setString(3, id);
                             pst.executeUpdate();
                             Message("client Supprimé !!");
-                            list = getClients();
+                            list = getClients("");
                             Actualiser(list);
                             inputClient.setText("");
                             inputClient.requestFocus();
@@ -380,7 +374,7 @@ public class Client implements Initializable {
         String rech = inputClient.getText().trim();
         if(rech.equals(""))
         {
-            list = getClients();
+            list = getClients("");
             Actualiser(list);
         }
         else

@@ -4,7 +4,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
@@ -17,12 +16,12 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0"
-            prefWidth="1200.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gestionstock.gestionstockv2.Commande">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gestionstock.gestionstockv2.Commande">
     <right>
         <AnchorPane prefHeight="700.0" prefWidth="750.0" BorderPane.alignment="CENTER">
             <children>
-                <TableView fx:id="tableClient" layoutX="37.0" layoutY="105.0" onMouseClicked="#lignePieceClick" prefHeight="174.0" prefWidth="695.0">
+                <TableView fx:id="tableClient" layoutX="37.0" layoutY="105.0" onMouseClicked="#ligneClientClick" prefHeight="174.0" prefWidth="695.0">
                     <columns>
                         <TableColumn fx:id="IDCLIENTcol" prefWidth="55.0" text="ID" />
                         <TableColumn fx:id="NOMcol" prefWidth="105.0" text="NOM" />
@@ -45,7 +44,7 @@
                 </Label>
                 <TextField fx:id="inputClient" layoutX="37.0" layoutY="57.0" prefHeight="34.0" prefWidth="264.0" promptText="Client" />
                 <Button layoutX="336.0" layoutY="56.0" mnemonicParsing="false" onAction="#rechClientClick" prefHeight="36.0" prefWidth="127.0" style="-fx-border-color: #01F6FE; -fx-border-width: 2px 2px 2px 2px;" text="Rechercher" />
-                <TableView fx:id="tableCMD" layoutX="37.0" layoutY="349.0" onMouseClicked="#cmdClick" prefHeight="330.0" prefWidth="695.0">
+                <TableView fx:id="tableCMD" layoutX="37.0" layoutY="349.0" onMouseClicked="#lignecmdClick" prefHeight="330.0" prefWidth="695.0">
                     <columns>
                         <TableColumn fx:id="IDCMDcol" prefWidth="55.0" text="ID" />
                         <TableColumn fx:id="CLIENTcol" prefWidth="120.0" text="CLIENT" />
@@ -88,8 +87,8 @@
                 <FontAwesomeIconView disable="true" glyphName="REMOVE" layoutX="406.0" layoutY="31.0" size="15" wrappingWidth="12.142857551574707" />
                 <VBox layoutX="131.0" layoutY="86.0" prefHeight="113.0" prefWidth="297.0" spacing="40.0">
                     <children>
-                        <ComboBox fx:id="client" prefHeight="35.0" prefWidth="297.0" promptText="Choisir le client" />
-                        <TextField fx:id="date" editable="false" layoutX="10.0" layoutY="85.0" prefHeight="35.0" prefWidth="274.0" promptText="Date" />
+                  <TextField fx:id="client" editable="false" layoutX="10.0" layoutY="10.0" prefHeight="35.0" prefWidth="274.0" promptText="CLIENT" />
+                        <TextField fx:id="date" editable="false" layoutX="10.0" layoutY="85.0" prefHeight="35.0" prefWidth="274.0" promptText="DATE" />
                     </children>
                 </VBox>
                 <ImageView fitHeight="126.0" fitWidth="130.0" layoutX="34.0" layoutY="452.0" pickOnBounds="true" preserveRatio="true">

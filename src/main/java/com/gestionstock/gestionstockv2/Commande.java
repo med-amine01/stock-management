@@ -2,27 +2,32 @@ package com.gestionstock.gestionstockv2;
 
 import Classes.Clnt;
 import Classes.Cmd;
+import Classes.Pie;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.ResourceBundle;
+
+import static java.lang.Integer.parseInt;
 
 public class Commande implements Initializable {
 
@@ -67,7 +72,7 @@ public class Commande implements Initializable {
     @FXML
     private CheckBox cbCMD;
     @FXML
-    private ComboBox<String> client;
+    private TextField client;
     @FXML
     private TextField date;
     @FXML
@@ -86,12 +91,15 @@ public class Commande implements Initializable {
     private Parent root;
 
     Connection con;
-    PreparedStatement pst,pst1,pst2,pst4;
+    PreparedStatement pst,pst1,pst2,pst3;
     ObservableList<Clnt> listClient;
     ObservableList<Cmd> listCmd;
 
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        date.setText(LocalDate.now().format(dateFormatter));
         listClient = getClients("");
         ActualiserClient(listClient);
 
@@ -228,8 +236,94 @@ public class Commande implements Initializable {
 
 
     @FXML
-    void AjouterCmdClick(ActionEvent event) {
+    void AjouterCmdClick(ActionEvent event)
+    {
+        String nomclient = client.getText();
+        int idcl=0 , idemp=0 , idcmd = 0;
 
+        String d = date.getText().concat("-").concat(LocalTime.now().toString());
+        if(nomclient.equals(""))
+        {
+            Message("Verifiez vos champs");
+        }
+        else
+        {
+            try
+            {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setHeaderText("Ajouter une commande");
+                alert.setContentText("Vous allez créer une commande \nVoulez-vous poursuivre ?\n CLIENT : <"+nomclient+">");
+
+                Optional<ButtonType> r = alert.showAndWait();
+                if (r.get() == ButtonType.OK){
+                    ResultSet rs, rs1, rs2;
+                    pst = con.prepareStatement("select idclient from client where nom = '"+nomclient+"'");
+                    rs = pst.executeQuery();
+
+                    while (rs.next())
+                    {
+                        idcl = rs.getInt("idclient");
+                    }
+                    pst1 = con.prepareStatement("select idemp from employe where nom = '"+ user.getText()+"'");
+                    rs1 = pst1.executeQuery();
+                    while (rs1.next())
+                    {
+                        idemp = rs1.getInt("idemp");
+                    }
+
+                    pst2 = con.prepareStatement("insert into commande (idemp,idclient,datecmd,montantTot,etatcmd,etat) values (?,?,?,?,?,?)");
+                    pst2.setString(1, String.valueOf(idemp));
+                    pst2.setString(2, String.valueOf(idcl));
+                    pst2.setString(3, d);
+                    pst2.setString(4, "0");
+                    pst2.setString(5, "EnCours");
+                    pst2.setString(6, "0");
+                    pst2.executeUpdate();
+                    Message("La commande a été créee");
+                    listCmd = getCommandes("");
+                    ActualiserCommande(listCmd);
+
+
+                    pst3 = con.prepareStatement("select idcmd from commande where idemp = '"+idemp+"' and idclient = '"+idcl+"' and etatcmd = 'EnCours'");
+                    rs2 = pst.executeQuery();
+                    while (rs2.next())
+                    {
+                        idcmd = rs2.getInt("idcmd");
+                    }
+                    LigneCmdWindow(idcmd,event);
+                    viderClick(event);
+
+                }
+
+            }
+            catch (SQLException e1)
+            {
+                e1.printStackTrace();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+    }
+
+    //--------------- LIGNE CMD WINDOW ------------------
+    public void LigneCmdWindow(int idcmd, ActionEvent event) throws IOException
+    {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("lignecmd.fxml"));
+            root = loader.load();
+            Lignecmd lignecmd = loader.getController();
+            lignecmd.setCmd(idcmd);
+            stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            stage.close();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.show();
+
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -252,10 +346,7 @@ public class Commande implements Initializable {
 
     }
 
-    @FXML
-    void cmdClick(MouseEvent event) {
 
-    }
 
     @FXML
     void dateClick(ActionEvent event) {
@@ -268,7 +359,17 @@ public class Commande implements Initializable {
     }
 
     @FXML
-    void lignePieceClick(MouseEvent event) {
+    void ligneClientClick(MouseEvent event) {
+        try {
+            Clnt clnt = tableClient.getSelectionModel().getSelectedItem();
+            client.setText(clnt.getNom());
+        }catch (NullPointerException e)
+        {
+            Message("Aucune ligne n'est sélectionnée");
+        }
+    }
+    @FXML
+    void lignecmdClick(MouseEvent event) {
 
     }
 
@@ -284,7 +385,7 @@ public class Commande implements Initializable {
 
     @FXML
     void viderClick(ActionEvent event) {
-
+        client.setText("");
     }
 
 
@@ -293,5 +394,16 @@ public class Commande implements Initializable {
     {
         user.setText(CurrentUserName);
     }
+    //------------------------- alert message ---------------------
+    private void Message(String msg)
+    {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+
+        alert.showAndWait();
+    }
+
+
 
 }
