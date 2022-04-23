@@ -16,19 +16,18 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gestionstock.gestionstockv2.Commande">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gestionstock.gestionstockv2.Commande">
     <right>
         <AnchorPane prefHeight="700.0" prefWidth="750.0" BorderPane.alignment="CENTER">
             <children>
                 <TableView fx:id="tableClient" layoutX="37.0" layoutY="105.0" onMouseClicked="#ligneClientClick" prefHeight="174.0" prefWidth="695.0">
                     <columns>
-                        <TableColumn fx:id="IDCLIENTcol" prefWidth="55.0" text="ID" />
-                        <TableColumn fx:id="NOMcol" prefWidth="105.0" text="NOM" />
-                        <TableColumn fx:id="PRENOMcol" prefWidth="137.0" text="PRENOM" />
-                        <TableColumn fx:id="Telcol" prefWidth="128.0" text="Téléphone" />
-                        <TableColumn fx:id="mailCol" prefWidth="143.0" text="Mail" />
-                        <TableColumn fx:id="ADDcol" prefWidth="126.0" text="ADRESSE" />
+                        <TableColumn fx:id="IDCLIENTcol" prefWidth="110.0" text="CIN" />
+                        <TableColumn fx:id="NOMcol" prefWidth="100.0" text="NOM" />
+                        <TableColumn fx:id="PRENOMcol" prefWidth="100.0" text="PRENOM" />
+                        <TableColumn fx:id="Telcol" prefWidth="110.0" text="Téléphone" />
+                        <TableColumn fx:id="mailCol" prefWidth="150.0" text="Mail" />
+                        <TableColumn fx:id="ADDcol" prefWidth="130.0" text="ADRESSE" />
                     </columns>
                     <opaqueInsets>
                         <Insets />

@@ -4,20 +4,28 @@ public class Cmd {
 
     private int idcmd;
     private int idemp;
-    private int idclient;
+    private String cinClient;
     private String datecmd;
     private double montant;
     private String etatcmd;
 
-    public Cmd(int idcmd, int idclient,int idemp, String datecmd, double montant, String etatcmd) {
+    public Cmd(int idcmd, int idemp, String cinClient, String datecmd, double montant, String etatcmd) {
         this.idcmd = idcmd;
         this.idemp = idemp;
-        this.idclient = idclient;
+        this.cinClient = cinClient;
         this.datecmd = datecmd;
         this.montant = montant;
         this.etatcmd = etatcmd;
     }
 
+
+    public String getCinClient() {
+        return cinClient;
+    }
+
+    public void setCinClient(String cinClient) {
+        this.cinClient = cinClient;
+    }
 
     public int getIdcmd() {
         return idcmd;
@@ -33,14 +41,6 @@ public class Cmd {
 
     public void setIdemp(int idemp) {
         this.idemp = idemp;
-    }
-
-    public int getIdclient() {
-        return idclient;
-    }
-
-    public void setIdclient(int idclient) {
-        this.idclient = idclient;
     }
 
     public String getDatecmd() {

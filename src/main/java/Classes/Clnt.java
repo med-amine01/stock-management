@@ -2,7 +2,7 @@ package Classes;
 
 public class Clnt {
 
-    private int idclient;
+    private String cinClient;
     private String nom;
     private String prenom;
     private String tel;
@@ -10,8 +10,8 @@ public class Clnt {
     private String adresse;
 
 
-    public Clnt(int idclient, String nom, String prenom, String tel, String mail, String adresse) {
-        this.idclient = idclient;
+    public Clnt(String cinClient, String nom, String prenom, String tel, String mail, String adresse) {
+        this.cinClient = cinClient;
         this.nom = nom;
         this.prenom = prenom;
         this.tel = tel;
@@ -20,12 +20,12 @@ public class Clnt {
     }
 
 
-    public int getIdclient() {
-        return idclient;
+    public String getCinClient() {
+        return cinClient;
     }
 
-    public void setIdclient(int idclient) {
-        this.idclient = idclient;
+    public void setCinClient(String cinClient) {
+        this.cinClient = cinClient;
     }
 
     public String getNom() {

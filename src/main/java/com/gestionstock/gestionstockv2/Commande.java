@@ -40,7 +40,7 @@ public class Commande implements Initializable {
     @FXML
     private TableColumn<Cmd, Double> MONTcol;
     @FXML
-    private TableColumn<Cmd, Integer> CLIENTcol;
+    private TableColumn<Cmd, String> CLIENTcol;
     @FXML
     private TableColumn<Cmd, String> DATEcol;
     @FXML
@@ -54,7 +54,7 @@ public class Commande implements Initializable {
     @FXML
     private TableView<Clnt> tableClient;
     @FXML
-    private TableColumn<Clnt, Integer> IDCLIENTcol;
+    private TableColumn<Clnt, String> IDCLIENTcol;
     @FXML
     private TableColumn<Clnt, String> ADDcol;
     @FXML
@@ -149,7 +149,7 @@ public class Commande implements Initializable {
 
             while (rs.next())
             {
-                clients = new Clnt(rs.getInt("idclient"),
+                clients = new Clnt(rs.getString("cinClient"),
                         rs.getString("nom"),
                         rs.getString("prenom"),
                         rs.getString("tel"),
@@ -192,7 +192,7 @@ public class Commande implements Initializable {
             {
                 cmds = new Cmd(rs.getInt("idcmd"),
                         rs.getInt("idemp"),
-                        rs.getInt("idclient"),
+                        rs.getString("cinClient"),
                         rs.getString("datecmd"),
                         rs.getDouble("montantTot"),
                         rs.getString("etatcmd"));
@@ -211,7 +211,7 @@ public class Commande implements Initializable {
 
     public void ActualiserClient(ObservableList<Clnt> list)
     {
-        IDCLIENTcol.setCellValueFactory(new PropertyValueFactory<Clnt,Integer>("idclient"));
+        IDCLIENTcol.setCellValueFactory(new PropertyValueFactory<Clnt,String>("cinClient"));
         NOMcol.setCellValueFactory(new PropertyValueFactory<Clnt,String>("nom"));
         PRENOMcol.setCellValueFactory(new PropertyValueFactory<Clnt,String>("prenom"));
         Telcol.setCellValueFactory(new PropertyValueFactory<Clnt,String>("tel"));
@@ -224,7 +224,7 @@ public class Commande implements Initializable {
     public void ActualiserCommande(ObservableList<Cmd> list)
     {
         IDCMDcol.setCellValueFactory(new PropertyValueFactory<Cmd,Integer>("idcmd"));
-        CLIENTcol.setCellValueFactory(new PropertyValueFactory<Cmd,Integer>("idclient"));
+        CLIENTcol.setCellValueFactory(new PropertyValueFactory<Cmd,String>("cinClient"));
         EMPcol.setCellValueFactory(new PropertyValueFactory<Cmd,Integer>("idemp"));
         DATEcol.setCellValueFactory(new PropertyValueFactory<Cmd,String>("datecmd"));
         MONTcol.setCellValueFactory(new PropertyValueFactory<Cmd,Double>("montant"));
@@ -239,7 +239,8 @@ public class Commande implements Initializable {
     void AjouterCmdClick(ActionEvent event)
     {
         String nomclient = client.getText();
-        int idcl=0 , idemp=0 , idcmd = 0;
+        String idcl = "";
+         int idemp=0 , idcmd = 0;
 
         String d = date.getText().concat("-").concat(LocalTime.now().toString());
         if(nomclient.equals(""))
@@ -257,12 +258,12 @@ public class Commande implements Initializable {
                 Optional<ButtonType> r = alert.showAndWait();
                 if (r.get() == ButtonType.OK){
                     ResultSet rs, rs1, rs2;
-                    pst = con.prepareStatement("select idclient from client where nom = '"+nomclient+"'");
+                    pst = con.prepareStatement("select cinClient from client where nom = '"+nomclient+"'");
                     rs = pst.executeQuery();
 
                     while (rs.next())
                     {
-                        idcl = rs.getInt("idclient");
+                        idcl = rs.getString("cinClient");
                     }
                     pst1 = con.prepareStatement("select idemp from employe where nom = '"+ user.getText()+"'");
                     rs1 = pst1.executeQuery();
@@ -271,9 +272,9 @@ public class Commande implements Initializable {
                         idemp = rs1.getInt("idemp");
                     }
 
-                    pst2 = con.prepareStatement("insert into commande (idemp,idclient,datecmd,montantTot,etatcmd,etat) values (?,?,?,?,?,?)");
+                    pst2 = con.prepareStatement("insert into commande (idemp,cinClient,datecmd,montantTot,etatcmd,etat) values (?,?,?,?,?,?)");
                     pst2.setString(1, String.valueOf(idemp));
-                    pst2.setString(2, String.valueOf(idcl));
+                    pst2.setString(2, idcl);
                     pst2.setString(3, d);
                     pst2.setString(4, "0");
                     pst2.setString(5, "EnCours");
@@ -284,7 +285,7 @@ public class Commande implements Initializable {
                     ActualiserCommande(listCmd);
 
 
-                    pst3 = con.prepareStatement("select idcmd from commande where idemp = '"+idemp+"' and idclient = '"+idcl+"' and etatcmd = 'EnCours'");
+                    pst3 = con.prepareStatement("select idcmd from commande where idemp = '"+idemp+"' and cinClient = '"+idcl+"' and etatcmd = 'EnCours'");
                     rs2 = pst.executeQuery();
                     while (rs2.next())
                     {

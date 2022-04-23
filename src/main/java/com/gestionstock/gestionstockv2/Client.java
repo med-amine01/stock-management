@@ -29,7 +29,7 @@ public class Client implements Initializable {
     private TableColumn<Clnt, String> ADDcol;
 
     @FXML
-    private TableColumn<Clnt, Integer> IDcol;
+    private TableColumn<Clnt, String> IDcol;
 
     @FXML
     private TableColumn<Clnt, String> MAILcol;
@@ -55,6 +55,9 @@ public class Client implements Initializable {
     private TextField nomClient;
     @FXML
     private TextField prenomClient;
+    @FXML
+    private TextField CIN;
+
 
     @FXML
     private Label user;
@@ -81,16 +84,13 @@ public class Client implements Initializable {
             con = DriverManager.getConnection("jdbc:mysql://localhost/gestionstock", "root","");
 
         }
-        catch (ClassNotFoundException ex)
+        catch (ClassNotFoundException | SQLException ex)
         {
             ex.printStackTrace();
 
         }
-        catch (SQLException ex)
-        {
-            ex.printStackTrace();
-        }
     }
+
 
     //---------------------- chargement du tableau dans une liste (Search)-----------------------------
     public ObservableList<Clnt> getClients(String sqlSearch)
@@ -115,7 +115,7 @@ public class Client implements Initializable {
 
             while (rs.next())
             {
-                clients = new Clnt(rs.getInt("idclient"), rs.getString("nom"),
+                clients = new Clnt(rs.getString("cinClient"), rs.getString("nom"),
                         rs.getString("prenom"),rs.getString("tel"),
                         rs.getString("mail"),rs.getString("adresse"));
                 clientList.add(clients);
@@ -131,7 +131,7 @@ public class Client implements Initializable {
     //---------------------------- ACTUALISER -----------------------------
     public void Actualiser(ObservableList<Clnt> list)
     {
-        IDcol.setCellValueFactory(new PropertyValueFactory<Clnt,Integer>("idclient"));
+        IDcol.setCellValueFactory(new PropertyValueFactory<Clnt,String>("cinClient"));
         NOMcol.setCellValueFactory(new PropertyValueFactory<Clnt,String>("nom"));
         PRENOMcol.setCellValueFactory(new PropertyValueFactory<Clnt,String>("prenom"));
         TELcol.setCellValueFactory(new PropertyValueFactory<Clnt,String>("tel"));
@@ -143,34 +143,45 @@ public class Client implements Initializable {
 
 
 
+
+
+    //------------------------ CRUD CLIENT ----------------------------
     @FXML
     void ajoutClick(ActionEvent event) {
-        String nom,prenom,adresse,mail,numtel;
+        String cin,nom,prenom,adresse,mail,numtel;
+        cin = CIN.getText().trim();
         nom = nomClient.getText().trim();
         prenom = prenomClient.getText().trim();
         numtel = telClient.getText().trim();
         mail = mailClient.getText().trim();
         adresse = addClient.getText().trim();
 
-        if(ChampEstVide(nom,prenom,adresse,numtel))
+        if(ChampEstVide(cin,nom,prenom,adresse,numtel))
         {
             Message("Verifiez Les Champs !!");
             nomClient.requestFocus();
         }
         else
         {
-            if(!ChampTelEstInteger(numtel) || numtel.length() != 8)
+            if(cin.length() != 8 || !ChampTelEstInteger(cin))
             {
-                Message( "Le client Déjà Existe ou Numéro Téléphone invalide");
-                telClient.setText("");
-                telClient.requestFocus();
+                Message( "Numéro CIN invalide");
+                CIN.setText("");
+                CIN.requestFocus();
             }
             else
             {
-
+                if(!ChampTelEstInteger(numtel) || numtel.length() != 8)
+                {
+                    Message( "Numéro Téléphone invalide");
+                    telClient.setText("");
+                    telClient.requestFocus();
+                }
+                else
+                {
                     if(!valideMail(mail))
                     {
-                        Message("Le client Déjà Existe ou mail invalide");
+                        Message("mail invalide");
                         mailClient.setText("");
                         mailClient.requestFocus();
                     }
@@ -178,65 +189,47 @@ public class Client implements Initializable {
                     {
                         try
                         {
-                            pst = con.prepareStatement("insert into client (nom,prenom,tel,mail,adresse,etat) values (?,?,?,?,?,?)");
-                            pst.setString(1, nom);
-                            pst.setString(2, prenom);
-                            pst.setString(3, numtel);
+                            pst = con.prepareStatement("insert into client (cinClient,nom,prenom,tel,mail,adresse,etat) values (?,?,?,?,?,?,?)");
+                            pst.setString(1, cin);
+                            pst.setString(2, nom);
+                            pst.setString(3, prenom);
+                            pst.setString(4, numtel);
                             if (mail.equals(""))
                             {
-                                pst.setString(4, "-");
+                                pst.setString(5, "-");
                             }
                             else
                             {
-                                pst.setString(4, mail);
+                                pst.setString(5, mail.replace(" ",""));
                             }
-                            pst.setString(5, adresse);
-                            pst.setString(6, "0");
+                            pst.setString(6, adresse);
+                            pst.setString(7, "0");
                             pst.executeUpdate();
                             Message("Client Ajouté !!");
                             list = getClients("");
                             Actualiser(list);
-                            nomClient.setText("");
-                            prenomClient.setText("");
-                            telClient.setText("");
-                            mailClient.setText("");
-                            addClient.setText("");
-                            nomClient.requestFocus();
+                            viderClick(event);
                         }
                         catch (SQLIntegrityConstraintViolationException e)
                         {
-                            Message("le numéro téléphone déjà existe !");
+                            Message("Le client déjà existe !");
+                            viderClick(event);
                         }
                         catch (SQLException e1)
                         {
                             e1.printStackTrace();
                         }
                     }
+                }
             }
-        }
-    }
-    @FXML
-    void ligneClick(MouseEvent event) {
 
-        try {
-            Clnt client = table.getSelectionModel().getSelectedItem();
-
-            nomClient.setText(client.getNom());
-            prenomClient.setText(client.getPrenom());
-            telClient.setText(client.getTel());
-            mailClient.setText(client.getMail());
-            addClient.setText(client.getAdresse());
         }
-        catch (NullPointerException e)
-        {
-            Message("Veuillez sélectionner un client !");
-        }
-
     }
     @FXML
     void modClick(ActionEvent event) {
         Clnt client = table.getSelectionModel().getSelectedItem();
-        String nom,prenom,adresse,tel,mail;
+        String cin,nom,prenom,adresse,tel,mail;
+        cin = CIN.getText().trim();
         nom = nomClient.getText().trim();
         prenom = prenomClient.getText().trim();
         tel = telClient.getText().trim();
@@ -252,48 +245,63 @@ public class Client implements Initializable {
         }
         else
         {
-            if (!ChampTelEstInteger(tel))
+            if(cin.length() != 8 || !ChampTelEstInteger(cin))
             {
-                Message("Verifiez Le Numéro du Téléphone !!");
-                telClient.setText("");
-                telClient.requestFocus();
+                Message( "Numéro CIN invalide");
+                CIN.setText("");
+                CIN.requestFocus();
             }
             else
             {
-                try {
+                if (!ChampTelEstInteger(tel) || tel.length() != 8)
+                {
+                    Message("Verifiez Le Numéro du Téléphone !!");
+                    telClient.setText("");
+                    telClient.requestFocus();
+                }
+                else
+                {
+                    try {
 
-                    pst = con.prepareStatement("update client set nom = ?, prenom = ?,tel = ? , mail = ?, adresse = ? where idclient = ? ");
+                        pst = con.prepareStatement("update client set cinClient = ? , nom = ?, prenom = ?,tel = ? , mail = ?, adresse = ? where cinClient = ? ");
 
-                    pst.setString(1, nom);
-                    pst.setString(2, prenom);
-                    pst.setString(3, tel);
-                    if (mail.equals(""))
-                    {
-                        pst.setString(4, "-");
-                    }
-                    else
-                    {
-                        if (!valideMail(mail)) {
-                            Message("mail invalide");
-                            mailClient.setText("");
-                            mailClient.requestFocus();
+                        pst.setString(1, cin);
+                        pst.setString(2, nom);
+                        pst.setString(3, prenom);
+                        pst.setString(4, tel);
+                        if (mail.equals(""))
+                        {
+                            pst.setString(5, "-");
                         }
                         else
                         {
-                            pst.setString(4, mail);
+                            if (!valideMail(mail)) {
+                                Message("mail invalide");
+                                mailClient.setText("");
+                                mailClient.requestFocus();
+                            }
+                            else
+                            {
+                                pst.setString(5, mail.replace(" ",""));
+                            }
                         }
-                    }
-                    pst.setString(5, adresse);
-                    pst.setString(6, String.valueOf(client.getIdclient()));
-                    pst.executeUpdate();
-                    Message("client Modifié !!");
-                    viderClick(event);
-                    list = getClients("");
-                    Actualiser(list);
-                    inputClient.requestFocus();
+                        pst.setString(6, adresse);
+                        pst.setString(7, client.getCinClient()); // cin 9dima avant modification
+                        pst.executeUpdate();
+                        Message("client Modifié !!");
+                        viderClick(event);
+                        list = getClients("");
+                        Actualiser(list);
+                        inputClient.requestFocus();
 
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
+                    }
+                    catch (SQLIntegrityConstraintViolationException e)
+                    {
+                        Message("client déjà existe");
+                    }
+                    catch (SQLException e1) {
+                        e1.printStackTrace();
+                    }
                 }
             }
         }
@@ -302,10 +310,9 @@ public class Client implements Initializable {
     @FXML
     void suppClick(ActionEvent event) {
         Clnt client = table.getSelectionModel().getSelectedItem();
-        String id =String.valueOf(client.getIdclient());
 
 
-        if(id.equals(""))
+        if(client.getCinClient().equals(""))
         {
             Message("Impossible De Supprimer");
             inputClient.setText("");
@@ -315,23 +322,22 @@ public class Client implements Initializable {
         {
             try
             {
-                pst1 = con.prepareStatement("select idclient, nom,prenom, tel, mail, adresse from client where idclient = "+id+";");
+                pst1 = con.prepareStatement("select idclient, nom,prenom, tel, mail, adresse from client where cinClient = "+client.getCinClient()+";");
                 ResultSet rs1 = pst1.executeQuery();
 
                 while(rs1.next())
                 {
                     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                    alert.setHeaderText("Le client "+id+" sera supprimé");
+                    alert.setHeaderText("Le client "+client.getCinClient()+" sera supprimé");
                     alert.setContentText("Vous êtes sûr de vouloir supprimer ?");
                     Optional<ButtonType> r = alert.showAndWait();
                     if (r.get() == ButtonType.OK)
                     {
                         try
                         {
-                            pst = con.prepareStatement("update client set etat = ? , tel = ? where idclient = ? ");
+                            pst = con.prepareStatement("update client set etat = ? where cinClient = ? ");
                             pst.setString(1, "1");
-                            pst.setString(2,telClient.getText().concat("-").concat(String.valueOf((int) ((Math.random() * (9999999 - 1)) + 1))));
-                            pst.setString(3, id);
+                            pst.setString(2, client.getCinClient());
                             pst.executeUpdate();
                             Message("client Supprimé !!");
                             list = getClients("");
@@ -364,11 +370,11 @@ public class Client implements Initializable {
         {
             if(ChampsIdEstInt(rech))
             {
-                String rqt = "select idclient,nom,prenom,tel,mail,adresse from client where etat = 0 and idclient = "+rech;
+                String rqt = "select cinClient,nom,prenom,tel,mail,adresse from client where etat = 0 and cinClient = "+rech;
                 list = getClients(rqt);
                 if(list.isEmpty())
                 {
-                    Message("ID <"+rech+"> n'existe pas !!");
+                    Message("CIN <"+rech+"> n'existe pas !!");
                     inputClient.setText("");
                     inputClient.requestFocus();
                 }
@@ -379,7 +385,7 @@ public class Client implements Initializable {
             }
             else
             {
-                String rqt ="select idclient,nom,prenom,tel,mail,adresse from client where (nom like '"+rech+"%' or prenom like '"+rech+"%' or mail like '"+rech+"%' or adresse like '"+rech+"%') and etat=0";
+                String rqt ="select cinClient,nom,prenom,tel,mail,adresse from client where (nom like '"+rech+"%' or prenom like '"+rech+"%' or mail like '"+rech+"%' or adresse like '"+rech+"%') and etat=0";
                 list = getClients(rqt);
                 list = getClients(rqt);
                 if(list.isEmpty())
@@ -395,17 +401,39 @@ public class Client implements Initializable {
             }
         }
     }
+    //-------------------------------------------------------------------
 
 
 
 
+    
+    @FXML
+    void ligneClick(MouseEvent event) {
+
+        try {
+            Clnt client = table.getSelectionModel().getSelectedItem();
+            CIN.setText(client.getCinClient());
+            nomClient.setText(client.getNom());
+            prenomClient.setText(client.getPrenom());
+            telClient.setText(client.getTel());
+            mailClient.setText(client.getMail());
+            addClient.setText(client.getAdresse());
+        }
+        catch (NullPointerException e)
+        {
+            Message("Veuillez sélectionner un client !");
+        }
+
+    }
     @FXML
     void viderClick(ActionEvent event) {
+        CIN.setText("");
         nomClient.setText("");
         prenomClient.setText("");
         telClient.setText("");
         mailClient.setText("");
         addClient.setText("");
+        CIN.requestFocus();
     }
     @FXML
     void backClick(ActionEvent event) {
