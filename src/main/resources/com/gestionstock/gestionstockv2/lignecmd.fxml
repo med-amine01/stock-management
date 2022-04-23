@@ -14,8 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gestionstock.gestionstockv2.Lignecmd">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gestionstock.gestionstockv2.Lignecmd">
     <right>
         <AnchorPane prefHeight="700.0" prefWidth="750.0" BorderPane.alignment="CENTER">
             <children>
@@ -43,13 +42,12 @@
                 <Button layoutX="336.0" layoutY="299.0" mnemonicParsing="false" onAction="#rechLCClick" prefHeight="36.0" prefWidth="127.0" style="-fx-border-color: #01F6FE; -fx-border-width: 2px 2px 2px 2px;" text="Rechercher" />
             <TableView fx:id="tablePiece" layoutX="37.0" layoutY="107.0" onMouseClicked="#lignePieceClick" prefHeight="174.0" prefWidth="695.0">
                <columns>
-                  <TableColumn fx:id="IDcol" prefWidth="55.0" text="ID" />
-                  <TableColumn fx:id="MARcol" prefWidth="95.0" text="MARQUE" />
-                  <TableColumn fx:id="MODcol" prefWidth="95.0" text="MODELE" />
-                  <TableColumn fx:id="SERcol" prefWidth="95.0" text="SERIE" />
-                  <TableColumn fx:id="QTEcol" prefWidth="100.0" text="QUANTITE" />
-                  <TableColumn fx:id="PRIXcol" prefWidth="126.0" text="PRIX UNITAIRE" />
-                  <TableColumn fx:id="QTEEFFcol" prefWidth="127.0" text="QTE EFFECTIVE" />
+                  <TableColumn fx:id="IDcol" prefWidth="60.0" text="ID" />
+                  <TableColumn fx:id="MARcol" prefWidth="125.0" text="MARQUE" />
+                  <TableColumn fx:id="MODcol" prefWidth="125.0" text="MODELE" />
+                  <TableColumn fx:id="SERcol" prefWidth="130.0" text="SERIE" />
+                  <TableColumn fx:id="QTEcol" prefWidth="120.0" text="QUANTITE" />
+                  <TableColumn fx:id="PRIXcol" prefWidth="134.0" text="PRIX UNITAIRE" />
                </columns>
                <opaqueInsets>
                   <Insets />
@@ -83,7 +81,7 @@
                 <FontAwesomeIconView disable="true" glyphName="REMOVE" layoutX="406.0" layoutY="31.0" size="15" wrappingWidth="12.142857551574707" />
                 <VBox layoutX="131.0" layoutY="86.0" prefHeight="113.0" prefWidth="297.0" spacing="40.0">
                     <children>
-                        <TextField fx:id="piece" layoutX="10.0" layoutY="10.0" prefHeight="35.0" prefWidth="274.0" promptText="PIECE" />
+                        <TextField fx:id="piece" editable="false" layoutX="10.0" layoutY="10.0" prefHeight="35.0" prefWidth="274.0" promptText="PIECE" />
                         <TextField fx:id="qte" layoutX="10.0" layoutY="85.0" prefHeight="35.0" prefWidth="274.0" promptText="QUANTITE" />
                     </children>
                 </VBox>

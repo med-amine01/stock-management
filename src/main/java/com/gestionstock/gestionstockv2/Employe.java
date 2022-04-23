@@ -12,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -248,7 +249,8 @@ public class Employe implements Initializable {
     }
 
     //--------------------- SELECT ROW DISPLAY ON TEXT FIELDS -----------------
-    public void ligneClick(javafx.scene.input.MouseEvent mouseEvent)
+    @FXML
+    public void ligneClick(MouseEvent event)
     {
         Emp employe = table.getSelectionModel().getSelectedItem();
 
@@ -575,7 +577,7 @@ public class Employe implements Initializable {
     //----------------------------id chiffres-----------------------------
     public boolean ChampsIdEstInt(String champsId)
     {
-        boolean b = false ;
+        boolean b  ;
         try
         {
             Integer.parseInt(champsId);
@@ -600,10 +602,6 @@ public class Employe implements Initializable {
                 b = true;
                 break;
             }
-            else
-            {
-                b = false;
-            }
         }
         return b;
     }
@@ -611,7 +609,7 @@ public class Employe implements Initializable {
     //------------------------- verification champ salaire ----------------------
     public boolean ChampSalaireEstDouble(String salaire)
     {
-        boolean b = false ;
+        boolean b ;
         try
         {
             Double.parseDouble(salaire);

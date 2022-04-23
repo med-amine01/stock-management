@@ -537,7 +537,7 @@ public class Piece implements Initializable {
     //----------------------------id chiffres-----------------------------
     public boolean ChampsIdEstInt(String champsId)
     {
-        boolean b = false ;
+        boolean b ;
         try
         {
             Integer.parseInt(champsId);
@@ -572,7 +572,7 @@ public class Piece implements Initializable {
     //------------------ champ est double----------------
     public boolean ChampPrixEstDouble(String prix)
     {
-        boolean b = false ;
+        boolean b ;
         try
         {
             Double.parseDouble(prix);

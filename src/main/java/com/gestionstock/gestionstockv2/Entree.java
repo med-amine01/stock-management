@@ -643,7 +643,7 @@ public class Entree implements Initializable {
     //----------------------------id chiffres-----------------------------
     public boolean ChampsIdEstInt(String champsId)
     {
-        boolean b = false ;
+        boolean b;
         try
         {
             Integer.parseInt(champsId);
@@ -666,10 +666,6 @@ public class Entree implements Initializable {
             {
                 b = true;
                 break;
-            }
-            else
-            {
-                b = false;
             }
         }
         return b;

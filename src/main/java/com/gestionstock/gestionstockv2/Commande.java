@@ -2,7 +2,6 @@ package com.gestionstock.gestionstockv2;
 
 import Classes.Clnt;
 import Classes.Cmd;
-import Classes.Pie;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -20,14 +19,11 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.ResourceBundle;
-
-import static java.lang.Integer.parseInt;
 
 public class Commande implements Initializable {
 
@@ -344,7 +340,19 @@ public class Commande implements Initializable {
 
     @FXML
     void backClick(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("intervendeur.fxml"));
+            root = loader.load();
+            InterVendeur interVendeur = loader.getController();
+            stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            stage.close();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
 
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 

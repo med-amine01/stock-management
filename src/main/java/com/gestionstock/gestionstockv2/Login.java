@@ -6,8 +6,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
+import javafx.scene.control.Alert;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -248,7 +250,7 @@ public class Login {
     //----------------------------id chiffres-----------------------------
     public boolean ChampsIdEstInt(String champsId)
     {
-        boolean b = false ;
+        boolean b ;
         try
         {
             Integer.parseInt(champsId);
@@ -302,10 +304,6 @@ public class Login {
             {
                 b = true;
                 break;
-            }
-            else
-            {
-                b = false;
             }
         }
         return b;
@@ -370,8 +368,4 @@ public class Login {
             }
         }
     }
-
-
-
-
 }

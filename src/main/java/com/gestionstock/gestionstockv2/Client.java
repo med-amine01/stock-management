@@ -439,10 +439,9 @@ public class Client implements Initializable {
     void backClick(ActionEvent event) {
         try
         {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("inter.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("intervendeur.fxml"));
             root = loader.load();
-            Inter inter = loader.getController();
-            inter.PrintAdminName(user.getText());
+            InterVendeur interVendeur = loader.getController();
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
             scene = new Scene(root);
             stage.setScene(scene);
@@ -482,10 +481,6 @@ public class Client implements Initializable {
                 b = true;
                 break;
             }
-            else
-            {
-                b = false;
-            }
         }
         return b;
     }
@@ -501,7 +496,7 @@ public class Client implements Initializable {
     //--------------------- Est ENTIER -----------------------------------
     public boolean ChampTelEstInteger(String tel)
     {
-        boolean b = false ;
+        boolean b  ;
         try
         {
             Integer.parseInt(tel);
@@ -517,7 +512,7 @@ public class Client implements Initializable {
     //----------------------------id chiffres-----------------------------
     public boolean ChampsIdEstInt(String champsId)
     {
-        boolean b = false ;
+        boolean b  ;
         try
         {
             Integer.parseInt(champsId);

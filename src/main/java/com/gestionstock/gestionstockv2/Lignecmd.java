@@ -6,7 +6,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -14,10 +16,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
-import java.security.interfaces.RSAKey;
 import java.sql.*;
 import java.text.DecimalFormat;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class Lignecmd  implements Initializable {
@@ -38,6 +41,7 @@ public class Lignecmd  implements Initializable {
     private TableColumn<Pie, Integer> QTEcol;
     @FXML
     private TableColumn<Pie, String> SERcol;
+
 
     //--------- DONNÉE LC ----------------
     @FXML
@@ -76,6 +80,8 @@ public class Lignecmd  implements Initializable {
     private Scene scene;
     private Parent root;
 
+
+
     ObservableList<Pie> listPiece;
     ObservableList<Lc> listLigneCmd;
 
@@ -84,10 +90,6 @@ public class Lignecmd  implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         listPiece = getPieces("");
         ActualiserPiece(listPiece);
-
-        String sql = "select * from lignecmd where etat = 0 and idcmd = '"+getCmd()+"'";
-        listLigneCmd = getLcs(sql);
-        ActualiserLigneCmd(listLigneCmd);
 
     }
 
@@ -160,7 +162,7 @@ public class Lignecmd  implements Initializable {
         {
             if(sqlSearch.equals(""))
             {
-                pst = con.prepareStatement("select * from lignecmd where etat = 0");
+                pst = con.prepareStatement("select * from lignecmd where etat = 0 and idcmd = "+getCmd());
                 rs= pst.executeQuery();
             }
             else
@@ -211,7 +213,8 @@ public class Lignecmd  implements Initializable {
 
     //------------------------ CRUD LIGNE CMD -------------------------
     @FXML
-    void AjouterLCClick(ActionEvent event) {
+    void AjouterLCClick(ActionEvent event)
+    {
         String idpiece = piece.getText();
         String qtee = qte.getText();
 
@@ -286,19 +289,82 @@ public class Lignecmd  implements Initializable {
     @FXML
     void PasserCmdClick(ActionEvent event)
     {
+        double mnt = 0.0;
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setHeaderText("Passer une commande ");
+        alert.setContentText("Vous allez passer la commande suivante  <"+getCmd()+"> !");
 
+        Optional<ButtonType> r = alert.showAndWait();
+        if (r.get() == ButtonType.OK){
+            try
+            {
+                for(int i=0; i<tableLC.getItems().size(); i++)
+                {
+                    mnt += tableLC.getItems().get(i).getPrixlc();
+                    pst1 = con.prepareStatement("update piece set qte = qte - ? where idpiece = ?");
+                    pst1.setString(1, String.valueOf(tableLC.getItems().get(i).getQtelc()));
+                    pst1.setString(2, String.valueOf(tableLC.getItems().get(i).getIdpiece()));
+                    pst1.executeUpdate();
+                }
+
+                pst2 = con.prepareStatement("update commande set etatcmd = ? , montantTot = ? where idcmd = ?");
+                pst2.setString(1, "Passer");
+                pst2.setString(2,String.valueOf(mnt));
+                pst2.setString(3,String.valueOf(getCmd()));
+                pst2.executeUpdate();
+                Message("la commande <"+getCmd()+"> a été PASSER");
+
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
 
     @FXML
     void AnnulerCmdClick(ActionEvent event)
     {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setHeaderText("Annuler une commande ");
+        alert.setContentText("Vous allez ANNULER la commande suivante  <"+getCmd()+"> !");
 
+        Optional<ButtonType> r = alert.showAndWait();
+        if (r.get() == ButtonType.OK){
+            try
+            {
+
+                pst2 = con.prepareStatement("update commande set etatcmd = ? where idcmd = ?");
+                pst2.setString(1, "Annuler");
+                pst2.setString(2,String.valueOf(getCmd()));
+                pst2.executeUpdate();
+                Message("la commande <"+getCmd()+"> a été ANNULER");
+                backClick(event);
+
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
     //--------------------------------------------------------
 
     @FXML
     void backClick(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("commande.fxml"));
+            root = loader.load();
+            Commande cmd = loader.getController();
+            stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            stage.close();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
 
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -381,7 +447,7 @@ public class Lignecmd  implements Initializable {
     //----------------------------est chiffres-----------------------------
     public boolean ChampsEstInt(String champsId)
     {
-        boolean b = false ;
+        boolean b  ;
         try
         {
             Integer.parseInt(champsId);
@@ -404,12 +470,11 @@ public class Lignecmd  implements Initializable {
                 b = true;
                 break;
             }
-            else
-            {
-                b = false;
-            }
         }
         return b;
     }
+
+
+
 
 }

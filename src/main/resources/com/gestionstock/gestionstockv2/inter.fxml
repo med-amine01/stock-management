@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import de.jensd.fx.glyphs.fontawesome.*?>
-<?import javafx.scene.control.*?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gestionstock.gestionstockv2.Inter">
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gestionstock.gestionstockv2.Inter">
    <left>
       <AnchorPane prefHeight="200.0" prefWidth="300.0" style="-fx-background-color: #054468;" BorderPane.alignment="CENTER">
          <children>
@@ -37,32 +40,32 @@
    <right>
       <AnchorPane prefHeight="200.0" prefWidth="400.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="empBtn" layoutX="25.0" layoutY="42.0" mnemonicParsing="false" onAction="#empClick" prefHeight="40.0" prefWidth="350.0" style="-fx-background-color: #054468;" text="Gérer Les Employés" textAlignment="CENTER" textFill="WHITE">
+            <Button layoutX="25.0" layoutY="42.0" mnemonicParsing="false" onAction="#empClick" prefHeight="40.0" prefWidth="350.0" style="-fx-background-color: #054468;" text="Gérer Les Employés" textAlignment="CENTER" textFill="WHITE">
                <font>
                   <Font size="18.0" />
                </font>
             </Button>
-            <Button fx:id="pieceBtn" layoutX="25.0" layoutY="122.0" mnemonicParsing="false" onAction="#pieceClick" prefHeight="40.0" prefWidth="350.0" style="-fx-background-color: #054468;" text="Gérer Les Pièces" textAlignment="CENTER" textFill="WHITE">
+            <Button layoutX="25.0" layoutY="122.0" mnemonicParsing="false" onAction="#pieceClick" prefHeight="40.0" prefWidth="350.0" style="-fx-background-color: #054468;" text="Gérer Les Pièces" textAlignment="CENTER" textFill="WHITE">
                <font>
                   <Font size="18.0" />
                </font>
             </Button>
-            <Button fx:id="fourBtn" layoutX="25.0" layoutY="195.0" mnemonicParsing="false" onAction="#FourClick" prefHeight="40.0" prefWidth="350.0" style="-fx-background-color: #054468;" text="Gérer Les Fournisseurs" textAlignment="CENTER" textFill="WHITE">
+            <Button layoutX="25.0" layoutY="195.0" mnemonicParsing="false" onAction="#FourClick" prefHeight="40.0" prefWidth="350.0" style="-fx-background-color: #054468;" text="Gérer Les Fournisseurs" textAlignment="CENTER" textFill="WHITE">
                <font>
                   <Font size="18.0" />
                </font>
             </Button>
-            <Button fx:id="clientBtn" layoutX="25.0" layoutY="267.0" mnemonicParsing="false" onAction="#clientClick" prefHeight="40.0" prefWidth="350.0" style="-fx-background-color: #054468;" text="Gérer Les Clients" textAlignment="CENTER" textFill="WHITE">
+            <Button layoutX="25.0" layoutY="267.0" mnemonicParsing="false" onAction="#clientClick" prefHeight="40.0" prefWidth="350.0" style="-fx-background-color: #054468;" text="Gérer Les Clients" textAlignment="CENTER" textFill="WHITE">
                <font>
                   <Font size="18.0" />
                </font>
             </Button>
-            <Button fx:id="entreeBtn" layoutX="25.0" layoutY="341.0" mnemonicParsing="false" onAction="#entreeClick" prefHeight="40.0" prefWidth="350.0" style="-fx-background-color: #054468;" text="Gérer Les Entrées" textAlignment="CENTER" textFill="WHITE">
+            <Button layoutX="25.0" layoutY="341.0" mnemonicParsing="false" onAction="#entreeClick" prefHeight="40.0" prefWidth="350.0" style="-fx-background-color: #054468;" text="Gérer Les Entrées" textAlignment="CENTER" textFill="WHITE">
                <font>
                   <Font size="18.0" />
                </font>
             </Button>
-            <Button fx:id="sortieBtn" layoutX="25.0" layoutY="409.0" mnemonicParsing="false" onAction="#sortieClick" prefHeight="40.0" prefWidth="350.0" style="-fx-background-color: #054468;" text="Gérer Les Sorties" textAlignment="CENTER" textFill="WHITE">
+            <Button layoutX="25.0" layoutY="409.0" mnemonicParsing="false" onAction="#sortieClick" prefHeight="40.0" prefWidth="350.0" style="-fx-background-color: #054468;" text="Gérer Les Sorties" textAlignment="CENTER" textFill="WHITE">
                <font>
                   <Font size="18.0" />
                </font>

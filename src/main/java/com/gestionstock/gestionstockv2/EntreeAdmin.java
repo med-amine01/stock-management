@@ -560,7 +560,7 @@ public class EntreeAdmin implements Initializable {
         try {
             Ent ent = tableEntree.getSelectionModel().getSelectedItem();
             piece.setText(String.valueOf(ent.getIdpiece()));
-            fournisseur.getSelectionModel().select(indexInListFournisseur(String.valueOf(ent.getIdfour())));;
+            fournisseur.getSelectionModel().select(indexInListFournisseur(String.valueOf(ent.getIdfour())));
             qte.setText(String.valueOf(ent.getQte()));
             date.setText(LocalDate.now().format(dateFormatter));
         }catch (NullPointerException e)
@@ -736,7 +736,7 @@ public class EntreeAdmin implements Initializable {
     //----------------------------id chiffres-----------------------------
     public boolean ChampsIdEstInt(String champsId)
     {
-        boolean b = false ;
+        boolean b ;
         try
         {
             Integer.parseInt(champsId);
@@ -759,10 +759,6 @@ public class EntreeAdmin implements Initializable {
             {
                 b = true;
                 break;
-            }
-            else
-            {
-                b = false;
             }
         }
         return b;

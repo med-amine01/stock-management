@@ -1,6 +1,5 @@
 package com.gestionstock.gestionstockv2;
 
-import Classes.Emp;
 import Classes.Four;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,12 +12,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -78,7 +77,6 @@ public class Fournisseur implements Initializable {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection("jdbc:mysql://localhost/gestionstock", "root","");
-            System.out.println("Connecté !!");
 
         }
         catch (ClassNotFoundException ex)
@@ -170,7 +168,7 @@ public class Fournisseur implements Initializable {
         }
         else
         {
-            if(ChampTelEstInteger(numtel) == false || numtel.length() != 8)
+            if(!ChampTelEstInteger(numtel) || numtel.length() != 8)
             {
                 Message( "Le Fournisseur Déjà Existe ou Numéro Téléphone invalide");
                 telFour.setText("");
@@ -178,7 +176,7 @@ public class Fournisseur implements Initializable {
             }
             else
             {
-                if(valideMail(mail) == false)
+                if(!valideMail(mail))
                 {
                     Message("Le Fournisseur Déjà Existe ou mail invalide");
                     mailFour.setText("");
@@ -226,15 +224,19 @@ public class Fournisseur implements Initializable {
         }
     }
     //--------------------- SELECT ROW DISPLAY ON TEXT FIELDS -----------------
-    public void ligneClick(javafx.scene.input.MouseEvent mouseEvent)
+    public void ligneClick(MouseEvent event)
     {
-        Four fournisseur = table.getSelectionModel().getSelectedItem();
+        try {
+            Four fournisseur = table.getSelectionModel().getSelectedItem();
 
-        nomFour.setText(fournisseur.getNomfour());
-        addFour.setText(fournisseur.getAddfour());
-        telFour.setText(fournisseur.getTelfour());
-        mailFour.setText(fournisseur.getMailfour());
-
+            nomFour.setText(fournisseur.getNomfour());
+            addFour.setText(fournisseur.getAddfour());
+            telFour.setText(fournisseur.getTelfour());
+            mailFour.setText(fournisseur.getMailfour());
+        }catch (NullPointerException e)
+        {
+            Message("Aucune ligne n'est sélectionnée");
+        }
     }
     //----------------------- CONFIRMER MODIFER -------------------------------
     @FXML
@@ -254,7 +256,7 @@ public class Fournisseur implements Initializable {
         }
         else
         {
-            if(ChampTelEstInteger(tel) == false)// || telEstUnique(tel,idconf) == false)
+            if(!ChampTelEstInteger(tel))// || telEstUnique(tel,idconf) == false)
             {
                 Message("Verifiez Le Numéro du Téléphone !!");
                 telFour.setText("");
@@ -262,7 +264,7 @@ public class Fournisseur implements Initializable {
             }
             else
             {
-                if (valideMail(mail) == false)//|| MailEstUnique(mail,idconf) == false  )
+                if (!valideMail(mail))//|| MailEstUnique(mail,idconf) == false  )
                 {
                     Message("Fournisseur Déjà Existe ou  mail invalide");
                     mailFour.setText("");
@@ -313,15 +315,7 @@ public class Fournisseur implements Initializable {
     void suppClick(ActionEvent event)
     {
         Four fournisseur = table.getSelectionModel().getSelectedItem();
-        String id ="";
-        String res = "";
-        try {
-            id = String.valueOf(fournisseur.getIdfour());
-        }catch (Exception e)
-        {
-            res = "Veuillez sélectionner un fournisseur !";
-        }
-
+        String id = String.valueOf(fournisseur.getIdfour());
 
         if(id.equals(""))
         {
@@ -531,7 +525,7 @@ public class Fournisseur implements Initializable {
     //--------------------- Est ENTIER -----------------------------------
     public boolean ChampTelEstInteger(String tel)
     {
-        boolean b = false ;
+        boolean b  ;
         try
         {
             Integer.parseInt(tel);
@@ -547,7 +541,7 @@ public class Fournisseur implements Initializable {
     //----------------------------id chiffres-----------------------------
     public boolean ChampsIdEstInt(String champsId)
     {
-        boolean b = false ;
+        boolean b  ;
         try
         {
             Integer.parseInt(champsId);
