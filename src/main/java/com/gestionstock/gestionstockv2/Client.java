@@ -167,8 +167,7 @@ public class Client implements Initializable {
             }
             else
             {
-                if (!mail.equals("")) //*
-                {
+
                     if(!valideMail(mail))
                     {
                         Message("Le client Déjà Existe ou mail invalide");
@@ -183,7 +182,14 @@ public class Client implements Initializable {
                             pst.setString(1, nom);
                             pst.setString(2, prenom);
                             pst.setString(3, numtel);
-                            pst.setString(4, mail);
+                            if (mail.equals(""))
+                            {
+                                pst.setString(4, "-");
+                            }
+                            else
+                            {
+                                pst.setString(4, mail);
+                            }
                             pst.setString(5, adresse);
                             pst.setString(6, "0");
                             pst.executeUpdate();
@@ -197,43 +203,15 @@ public class Client implements Initializable {
                             addClient.setText("");
                             nomClient.requestFocus();
                         }
+                        catch (SQLIntegrityConstraintViolationException e)
+                        {
+                            Message("le numéro téléphone déjà existe !");
+                        }
                         catch (SQLException e1)
                         {
                             e1.printStackTrace();
                         }
                     }
-                }
-                else
-                {
-                    try
-                    {
-                        pst = con.prepareStatement("insert into client (nom,prenom,tel,mail,adresse,etat) values (?,?,?,?,?,?)");
-                        pst.setString(1, nom);
-                        pst.setString(2, prenom);
-                        pst.setString(3, numtel);
-                        pst.setString(4, "-");
-                        pst.setString(5, adresse);
-                        pst.setString(6, "0");
-                        pst.executeUpdate();
-                        Message("Client Ajouté !!");
-                        list = getClients("");
-                        Actualiser(list);
-                        nomClient.setText("");
-                        prenomClient.setText("");
-                        telClient.setText("");
-                        mailClient.setText("");
-                        addClient.setText("");
-                        nomClient.requestFocus();
-                    }
-                    catch (SQLIntegrityConstraintViolationException e)
-                    {
-                        Message("le numéro téléphone déjà existe !");
-                    }
-                    catch (SQLException e1)
-                    {
-                        e1.printStackTrace();
-                    }
-                }
             }
         }
     }
@@ -267,14 +245,14 @@ public class Client implements Initializable {
 
 
 
-        if(ChampEstVide(nom,prenom,adresse,tel,mail)) //test mail
+        if(ChampEstVide(nom,prenom,adresse,tel))
         {
             Message( "Verifiez Les Champs !!");
             nomClient.requestFocus();
         }
         else
         {
-            if(!ChampTelEstInteger(tel))// || telEstUnique(tel,idconf) == false)
+            if (!ChampTelEstInteger(tel))
             {
                 Message("Verifiez Le Numéro du Téléphone !!");
                 telClient.setText("");
@@ -282,35 +260,40 @@ public class Client implements Initializable {
             }
             else
             {
-                //------------- test mail ici | remove mail champ est vide
-                if (!valideMail(mail))
-                {
-                    Message("client Déjà Existe ou  mail invalide");
-                    mailClient.setText("");
-                    mailClient.requestFocus();
-                }
-                else
-                {
-                    try
+                try {
+
+                    pst = con.prepareStatement("update client set nom = ?, prenom = ?,tel = ? , mail = ?, adresse = ? where idclient = ? ");
+
+                    pst.setString(1, nom);
+                    pst.setString(2, prenom);
+                    pst.setString(3, tel);
+                    if (mail.equals(""))
                     {
-                        pst = con.prepareStatement("update client set nom = ?, prenom = ?,tel = ? , mail = ?, adresse = ? where idclient = ? ");
-
-                        pst.setString(1, nom);
-                        pst.setString(2, prenom);
-                        pst.setString(3, tel);
-                        pst.setString(4, mail);
-                        pst.setString(5, adresse);
-                        pst.setString(6, String.valueOf(client.getIdclient()));
-                        pst.executeUpdate();
-                        Message("client Modifié !!");
-                        viderClick(event);
-                        list = getClients("");
-                        Actualiser(list);
-                        inputClient.requestFocus();
-
-                    } catch (SQLException e1) {
-                        e1.printStackTrace();
+                        pst.setString(4, "-");
                     }
+                    else
+                    {
+                        if (!valideMail(mail)) {
+                            Message("mail invalide");
+                            mailClient.setText("");
+                            mailClient.requestFocus();
+                        }
+                        else
+                        {
+                            pst.setString(4, mail);
+                        }
+                    }
+                    pst.setString(5, adresse);
+                    pst.setString(6, String.valueOf(client.getIdclient()));
+                    pst.executeUpdate();
+                    Message("client Modifié !!");
+                    viderClick(event);
+                    list = getClients("");
+                    Actualiser(list);
+                    inputClient.requestFocus();
+
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
                 }
             }
         }

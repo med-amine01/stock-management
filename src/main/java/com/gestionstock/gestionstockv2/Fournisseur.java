@@ -192,7 +192,20 @@ public class Fournisseur implements Initializable {
                         pst.setString(1, nom);
                         pst.setString(2, adresse);
                         pst.setString(3, numtel);
-                        pst.setString(4, mail);
+                        if (mail.equals(""))
+                        {
+                            pst.setString(4, "-");
+                        }
+                        else
+                        {
+                            if (!valideMail(mail)) {
+                                Message("mail invalide");
+                                mailFour.setText("");
+                                mailFour.requestFocus();
+                            } else {
+                                pst.setString(4, mail);
+                            }
+                        }
                         pst.setString(5, "0");
                         pst.executeUpdate();
                         Message("Fournisseur Ajouté !!");
@@ -264,7 +277,22 @@ public class Fournisseur implements Initializable {
                         pst.setString(1, nom);
                         pst.setString(2, adresse);
                         pst.setString(3, tel);
-                        pst.setString(4, mail);
+                        if (mail.equals(""))
+                        {
+                            pst.setString(4, "-");
+                        }
+                        else
+                        {
+                            if (!valideMail(mail)) {
+                                Message("mail invalide");
+                                mailFour.setText("");
+                                mailFour.requestFocus();
+                            }
+                            else
+                            {
+                                pst.setString(4, mail);
+                            }
+                        }
                         pst.setString(5, String.valueOf(fournisseur.getIdfour()));
                         pst.executeUpdate();
                         Message("Fournisseur Modifié !!");
