@@ -78,10 +78,7 @@ public class Inter {
         }
     }
 
-    @FXML
-    void clientClick(ActionEvent event) {
 
-    }
 
     @FXML
     void entreeClick(ActionEvent event) {
@@ -107,6 +104,21 @@ public class Inter {
 
     @FXML
     void sortieClick(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("sortie.fxml"));
+            root = loader.load();
+            Sortie sortie = loader.getController();
+            sortie.PrintUserName(user.getText());
+            stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            stage.close();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.centerOnScreen();
+            stage.show();
+
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
