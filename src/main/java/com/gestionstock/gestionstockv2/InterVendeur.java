@@ -30,6 +30,7 @@ public class InterVendeur implements Initializable {
     private Stage stage;
     private Scene scene;
     private Parent root;
+    private static String idemp;
 
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
 
@@ -62,6 +63,7 @@ public class InterVendeur implements Initializable {
         root = loader.load();
         Commande commande = loader.getController();
         commande.PrintUserName(user.getText());
+        commande.setIdemp(getIdemp());
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
         stage.close();
         scene = new Scene(root);
@@ -82,4 +84,11 @@ public class InterVendeur implements Initializable {
         user.setText(CurrentUserName);
     }
 
+    public static String getIdemp() {
+        return idemp;
+    }
+
+    public void setIdemp(String idemp) {
+        this.idemp = idemp;
+    }
 }

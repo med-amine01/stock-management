@@ -162,7 +162,7 @@ public class Login {
                                         }
                                         else
                                         {
-                                            VendeurWindow(rs.getString("nom"), event);
+                                            VendeurWindow(rs.getString("nom"),id, event);
                                         }
                                     }
                                 }
@@ -188,7 +188,7 @@ public class Login {
     }
 
     //--------------------- ADMIN WINDOW -----------------------
-    public void AdminWindow(String currentuser, ActionEvent event) throws IOException {
+    public void AdminWindow(String currentuser,  ActionEvent event) throws IOException {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("inter.fxml"));
             root = loader.load();
@@ -228,12 +228,13 @@ public class Login {
     }
 
     // ------------------------ Vendeur Window ---------------------------
-    public void VendeurWindow(String currentuser, ActionEvent event) throws IOException {
+    public void VendeurWindow(String currentuser, String id, ActionEvent event) throws IOException {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("intervendeur.fxml"));
             root = loader.load();
             InterVendeur interVendeur = loader.getController();
             interVendeur.PrintUserName(currentuser);
+            interVendeur.setIdemp(id);
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
             stage.close();
             scene = new Scene(root);
@@ -356,7 +357,7 @@ public class Login {
                     //vendeur window
                     if(post.equals("Vendeur"))
                     {
-                       VendeurWindow(CurentUser, event);
+                       VendeurWindow(CurentUser, id, event);
                     }
                 }
                 catch (SQLException ex)

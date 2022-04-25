@@ -93,6 +93,8 @@ public class Commande implements Initializable {
 
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
 
+    private static String idemp;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         date.setText(LocalDate.now().format(dateFormatter));
@@ -236,7 +238,7 @@ public class Commande implements Initializable {
     {
         String nomclient = client.getText();
         String idcl = "";
-         int idemp=0 , idcmd = 0;
+        int idcmd = 0;
 
         String d = date.getText().concat("-").concat(LocalTime.now().toString());
         if(nomclient.equals(""))
@@ -261,15 +263,9 @@ public class Commande implements Initializable {
                     {
                         idcl = rs.getString("cinClient");
                     }
-                    pst1 = con.prepareStatement("select idemp from employe where nom = '"+ user.getText()+"'");
-                    rs1 = pst1.executeQuery();
-                    while (rs1.next())
-                    {
-                        idemp = rs1.getInt("idemp");
-                    }
 
                     pst2 = con.prepareStatement("insert into commande (idemp,cinClient,datecmd,montantTot,etatcmd,etat) values (?,?,?,?,?,?)");
-                    pst2.setString(1, String.valueOf(idemp));
+                    pst2.setString(1, getIdemp());
                     pst2.setString(2, idcl);
                     pst2.setString(3, d);
                     pst2.setString(4, "0");
@@ -281,7 +277,7 @@ public class Commande implements Initializable {
                     ActualiserCommande(listCmd);
 
 
-                    pst3 = con.prepareStatement("select idcmd from commande where idemp = '"+idemp+"' and cinClient = '"+idcl+"' and etatcmd = 'EnCours'");
+                    pst3 = con.prepareStatement("select idcmd from commande where idemp = '"+getIdemp()+"' and cinClient = '"+idcl+"' and etatcmd = 'EnCours'");
                     rs2 = pst.executeQuery();
                     while (rs2.next())
                     {
@@ -414,5 +410,11 @@ public class Commande implements Initializable {
     }
 
 
+    public static String getIdemp() {
+        return idemp;
+    }
 
+    public void setIdemp(String idemp) {
+        this.idemp = idemp;
+    }
 }
