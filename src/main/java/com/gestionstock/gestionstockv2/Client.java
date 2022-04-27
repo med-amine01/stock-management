@@ -387,7 +387,6 @@ public class Client implements Initializable {
             {
                 String rqt ="select cinClient,nom,prenom,tel,mail,adresse from client where (nom like '"+rech+"%' or prenom like '"+rech+"%' or mail like '"+rech+"%' or adresse like '"+rech+"%') and etat=0";
                 list = getClients(rqt);
-                list = getClients(rqt);
                 if(list.isEmpty())
                 {
                     Message("<"+rech+"> n'existe pas !");
@@ -442,6 +441,7 @@ public class Client implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("intervendeur.fxml"));
             root = loader.load();
             InterVendeur interVendeur = loader.getController();
+            interVendeur.countNb();
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
             scene = new Scene(root);
             stage.setScene(scene);

@@ -235,6 +235,7 @@ public class Login {
             InterVendeur interVendeur = loader.getController();
             interVendeur.PrintUserName(currentuser);
             interVendeur.setIdemp(id);
+            interVendeur.countNb();
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
             stage.close();
             scene = new Scene(root);

@@ -79,6 +79,7 @@ public class Lignecmd  implements Initializable {
     private Stage stage;
     private Scene scene;
     private Parent root;
+    private String idlc;
 
 
 
@@ -211,6 +212,9 @@ public class Lignecmd  implements Initializable {
         tablePiece.setItems(list);
     }
 
+
+
+
     //------------------------ CRUD LIGNE CMD -------------------------
     @FXML
     void AjouterLCClick(ActionEvent event)
@@ -232,7 +236,7 @@ public class Lignecmd  implements Initializable {
             }
             else
             {
-                ResultSet rs ,rs1, rs2;
+                ResultSet rs, rs1, rs2;
                 try {
                     pst = con.prepareStatement("select qte from piece where idpiece ='"+idpiece+"'");
                     rs = pst.executeQuery();
@@ -256,6 +260,14 @@ public class Lignecmd  implements Initializable {
                             Message("La ligne a été ajoutée");
                             listLigneCmd = getLcs("");
                             ActualiserLigneCmd(listLigneCmd);
+                            viderClick(event);
+
+                            pst2 = con.prepareStatement("select sum(prixlc) from lignecmd where idcmd = "+getCmd());
+                            rs1 = pst2.executeQuery();
+                            while (rs1.next())
+                            {
+                                mntTot.setText(rs1.getString("sum(prixlc)"));
+                            }
                         }
                         else
                         {
@@ -272,23 +284,219 @@ public class Lignecmd  implements Initializable {
             }
         }
     }
-
     @FXML
-    void ModifierLCClick(ActionEvent event) {
+    void ModifierLCClick(ActionEvent event)
+    {
+
+        String idpiece = piece.getText();
+        String qtee = qte.getText();
+        try {
+            if (idlc.isEmpty())
+            {
+                Message("veuillez selectionné la ligne à modifier ! ");
+            }
+            else
+            {
+                if(ChampEstVide(idpiece,qtee))
+                {
+                    Message("Verifiez Les Champs !!");
+                }
+                else
+                {
+                    if(!ChampsEstInt(qtee) && !QteSupZero(qtee))
+                    {
+                        Message("quantité invalide");
+                        qte.setText("");
+                        qte.requestFocus();
+                    }
+                    else
+                    {
+                        ResultSet rs, rs2;
+                        try
+                        {
+                            pst = con.prepareStatement("select qte from piece where idpiece ='"+idpiece+"'");
+                            rs = pst.executeQuery();
+
+                            pst2 = con.prepareStatement("select prixunitaire from piece where idpiece ='"+idpiece+"'");
+                            rs2 = pst2.executeQuery();
+                            while (rs.next() && rs2.next())
+                            {
+                                if(Integer.parseInt(qtee) <= rs.getInt("qte"))
+                                {
+                                    double mntlc = Integer.parseInt(qtee) * Double.parseDouble(rs2.getString("prixunitaire"));
+                                    double insertmnt = Double.parseDouble(new DecimalFormat("#####.####").format(mntlc).replace(',' , '.'));
+
+                                    pst1 = con.prepareStatement("update lignecmd set idpiece = ? , qtelc = ? , prixlc = ?  where idlc = ?");
+                                    pst1.setString(1,idpiece);
+                                    pst1.setString(2,qtee);
+                                    pst1.setString(3,String.valueOf(insertmnt));
+                                    pst1.setString(4,idlc);
+                                    pst1.executeUpdate();
+                                    Message("La ligne a été modifiée");
+                                    listLigneCmd = getLcs("");
+                                    ActualiserLigneCmd(listLigneCmd);
+                                    viderClick(event);
+                                    idlc = "";
+                                }
+                                else
+                                {
+                                    Message("La quantité demandé est supérieur au stock <"+rs.getInt("qte")+">");
+                                    qte.setText("");
+                                    qte.requestFocus();
+                                }
+                            }
+                        }
+                        catch (SQLException ex)
+                        {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+        catch (NullPointerException e)
+        {
+            Message("veuillez selectionné la ligne à modifier !");
+        }
 
     }
-
     @FXML
-    void SuppLCClick(ActionEvent event) {
+    void SuppLCClick(ActionEvent event)
+    {
+        try
+        {
+            if(idlc.isEmpty())
+            {
+                Message("veuillez selectionné la ligne à supprimer");
+            }
+            else
+            {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setHeaderText("Supprimer la ligne de commande ? ");
+                alert.setContentText("Vous allez SUPPRIMER la linge suivante  <"+idlc+"> !");
 
+                Optional<ButtonType> r = alert.showAndWait();
+                if (r.get() == ButtonType.OK)
+                {
+                    try
+                    {
+                        ResultSet rs1;
+                        pst = con.prepareStatement("delete from lignecmd where idlc = "+ idlc);
+                        pst.execute();
+                        Message("La ligne a été Supprimé");
+                        listLigneCmd = getLcs("");
+                        ActualiserLigneCmd(listLigneCmd);
+                        viderClick(event);
+                        idlc = "";
+                        pst2 = con.prepareStatement("select sum(prixlc) from lignecmd where idcmd = "+getCmd());
+                        rs1 = pst2.executeQuery();
+                        while (rs1.next())
+                        {
+                            mntTot.setText(rs1.getString("sum(prixlc)"));
+                        }
+                    }
+                    catch (SQLException e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        catch (NullPointerException e)
+        {
+            Message("veuillez selectionné la ligne à supprimer");
+        }
+
+
+
+    }
+    @FXML
+    void rechLCClick(ActionEvent event)
+    {
+        String rech = inputLC.getText().trim();
+        if(rech.equals(""))
+        {
+            listLigneCmd = getLcs("");
+            ActualiserLigneCmd(listLigneCmd);
+        }
+        else
+        {
+            String rqt = "select * from lignecmd where idlc like '"+rech+"%'" +
+                    "or idpiece like '"+rech+"%' and idcmd = "+getCmd();
+            listLigneCmd = getLcs(rqt);
+            if(listLigneCmd.isEmpty())
+            {
+                Message("<"+rech+"> n'existe pas !");
+                inputLC.setText("");
+                inputLC.requestFocus();
+            }
+            else
+            {
+                ActualiserLigneCmd(listLigneCmd);
+            }
+        }
+    }
+    @FXML
+    void rechPieceClick(ActionEvent event)
+    {
+        String rech = inputpiece.getText().trim();
+        if(rech.equals(""))
+        {
+            listPiece = getPieces("");
+            ActualiserPiece(listPiece);
+        }
+        else
+        {
+            if(ChampsEstInt(rech)) //3RAFNA ELI HOA YFARKESS BEL ID
+            {
+                String rqt = "select * from piece where etat = 0 and idpiece = "+rech;
+                listPiece = getPieces(rqt);
+
+                if(listPiece.isEmpty())
+                {
+                    Message("ID <"+rech+"> n'existe pas !!");
+                    inputpiece.setText("");
+                    inputpiece.requestFocus();
+                }
+                else
+                {
+                    ActualiserPiece(listPiece);
+                }
+            }
+            else
+            {
+                String rqt = "select * from piece where marque like '"+rech+"%'" +
+                        "or modele like '"+rech+"%' or serie like '"+rech+"%' HAVING etat = 0";
+                listPiece = getPieces(rqt);
+                if(listPiece.isEmpty())
+                {
+                    Message("<"+rech+"> n'existe pas !");
+                    inputpiece.setText("");
+                    inputpiece.requestFocus();
+                }
+                else
+                {
+                    ActualiserPiece(listPiece);
+                }
+            }
+        }
     }
     //---------------------------------------------------------------
+
+
+
 
 
     //------------- COMMANDES (passer / annuler)--------------
     @FXML
     void PasserCmdClick(ActionEvent event)
     {
+        //BUG RECHERCHE + PASSER CMD
+        //il faut initialisé le tableau
+        listLigneCmd = getLcs("");
+        ActualiserLigneCmd(listLigneCmd);
+
+
         double mnt = 0.0;
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setHeaderText("Passer une commande ");
@@ -313,6 +521,9 @@ public class Lignecmd  implements Initializable {
                 pst2.setString(3,String.valueOf(getCmd()));
                 pst2.executeUpdate();
                 Message("la commande <"+getCmd()+"> a été PASSER");
+                listPiece = getPieces("");
+                ActualiserPiece(listPiece);
+                backClick(event);
 
             }
             catch (SQLException e)
@@ -350,13 +561,15 @@ public class Lignecmd  implements Initializable {
     }
     //--------------------------------------------------------
 
-    @FXML
-    void backClick(ActionEvent event) {
+
+    void backClick(ActionEvent event)
+    {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("commande.fxml"));
             root = loader.load();
             Commande cmd = loader.getController();
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            cmd.printSumPrixCmd();
             stage.close();
             scene = new Scene(root);
             stage.setScene(scene);
@@ -368,8 +581,20 @@ public class Lignecmd  implements Initializable {
     }
 
     @FXML
-    void decClick(ActionEvent event) {
+    void decClick(ActionEvent event)
+    {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
+            root = loader.load();
+            stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            stage.close();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
 
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -391,25 +616,19 @@ public class Lignecmd  implements Initializable {
             Lc lc = tableLC.getSelectionModel().getSelectedItem();
             piece.setText(String.valueOf(lc.getIdpiece()));
             qte.setText(String.valueOf(lc.getQtelc()));
+            idlc = String.valueOf(lc.getIdlc());
         }catch (NullPointerException e)
         {
+            idlc = "";
             Message("Aucune ligne n'est sélectionnée");
         }
     }
 
     @FXML
-    void rechLCClick(ActionEvent event) {
-
-    }
-
-    @FXML
-    void rechPieceClick(ActionEvent event) {
-
-    }
-
-    @FXML
-    void viderClick(ActionEvent event) {
-
+    void viderClick(ActionEvent event)
+    {
+        piece.setText("");
+        qte.setText("");
     }
 
     //------------ get idcmd ----------------

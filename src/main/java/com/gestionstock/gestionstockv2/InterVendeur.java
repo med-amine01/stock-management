@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
@@ -31,13 +32,36 @@ public class InterVendeur implements Initializable {
     private Scene scene;
     private Parent root;
     private static String idemp;
+    Connection con;
+    PreparedStatement pst;
 
     DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        sortieDate.setText(LocalDate.now().format(dateFormatter));
+        connect();
+
     }
+
+    //-------------------- Connection à la base de donnée -----------------------
+    public void connect()
+    {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://localhost/gestionstock", "root","");
+
+        }
+        catch (ClassNotFoundException ex)
+        {
+            ex.printStackTrace();
+
+        }
+        catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
 
     @FXML
     void clientClick(ActionEvent event) {
@@ -64,6 +88,7 @@ public class InterVendeur implements Initializable {
         Commande commande = loader.getController();
         commande.PrintUserName(user.getText());
         commande.setIdemp(getIdemp());
+        commande.printSumPrixCmd();
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
         stage.close();
         scene = new Scene(root);
@@ -74,7 +99,38 @@ public class InterVendeur implements Initializable {
 
     @FXML
     void decClick(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
+            root = loader.load();
+            stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            stage.close();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
 
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void countNb()
+    {
+        try
+        {
+            pst = con.prepareStatement("select count(*) from commande where datecmd like '"+ LocalDate.now().format(dateFormatter)+"%' and idemp = "+getIdemp());
+            ResultSet rs = pst.executeQuery();
+            while (rs.next())
+            {
+                sortielabel.setText(rs.getString("COUNT(*)"));
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        sortieDate.setText(LocalDate.now().format(dateFormatter));
     }
 
 
@@ -89,6 +145,6 @@ public class InterVendeur implements Initializable {
     }
 
     public void setIdemp(String idemp) {
-        this.idemp = idemp;
+        InterVendeur.idemp = idemp;
     }
 }

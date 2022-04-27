@@ -15,10 +15,12 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -95,9 +97,32 @@ public class Commande implements Initializable {
 
     private static String idemp;
 
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        datePicker.setPromptText(LocalDate.now().format(dateFormatter));
         date.setText(LocalDate.now().format(dateFormatter));
+        datePicker.setConverter(new StringConverter<>() {
+
+            @Override
+            public String toString(LocalDate date) {
+                if (date != null) {
+                    return dateFormatter.format(date);
+                } else {
+                    return "";
+                }
+            }
+
+            @Override
+            public LocalDate fromString(String string) {
+                if (string != null && !string.isEmpty()) {
+                    return LocalDate.parse(string, dateFormatter);
+                } else {
+                    return null;
+                }
+            }
+        });
         listClient = getClients("");
         ActualiserClient(listClient);
 
@@ -205,8 +230,6 @@ public class Commande implements Initializable {
 
         return cmdList;
     }
-
-
     public void ActualiserClient(ObservableList<Clnt> list)
     {
         IDCLIENTcol.setCellValueFactory(new PropertyValueFactory<Clnt,String>("cinClient"));
@@ -218,7 +241,6 @@ public class Commande implements Initializable {
 
         tableClient.setItems(list);
     }
-
     public void ActualiserCommande(ObservableList<Cmd> list)
     {
         IDCMDcol.setCellValueFactory(new PropertyValueFactory<Cmd,Integer>("idcmd"));
@@ -232,7 +254,7 @@ public class Commande implements Initializable {
     }
 
 
-
+    //------------------------------------- CRUD CMD -----------------------------------------------------
     @FXML
     void AjouterCmdClick(ActionEvent event)
     {
@@ -240,7 +262,6 @@ public class Commande implements Initializable {
         String idcl = "";
         int idcmd = 0;
 
-        String d = date.getText().concat("-").concat(LocalTime.now().toString());
         if(nomclient.equals(""))
         {
             Message("Verifiez vos champs");
@@ -255,7 +276,7 @@ public class Commande implements Initializable {
 
                 Optional<ButtonType> r = alert.showAndWait();
                 if (r.get() == ButtonType.OK){
-                    ResultSet rs, rs1, rs2;
+                    ResultSet rs, rs2;
                     pst = con.prepareStatement("select cinClient from client where nom = '"+nomclient+"'");
                     rs = pst.executeQuery();
 
@@ -264,10 +285,12 @@ public class Commande implements Initializable {
                         idcl = rs.getString("cinClient");
                     }
 
+                    LocalDate d = LocalDate.now();
+                    String currentDate = d.format(dateFormatter).concat("-").concat(String.valueOf(LocalTime.now()));
                     pst2 = con.prepareStatement("insert into commande (idemp,cinClient,datecmd,montantTot,etatcmd,etat) values (?,?,?,?,?,?)");
                     pst2.setString(1, getIdemp());
                     pst2.setString(2, idcl);
-                    pst2.setString(3, d);
+                    pst2.setString(3, currentDate);
                     pst2.setString(4, "0");
                     pst2.setString(5, "EnCours");
                     pst2.setString(6, "0");
@@ -285,6 +308,7 @@ public class Commande implements Initializable {
                     }
                     LigneCmdWindow(idcmd,event);
                     viderClick(event);
+                    printSumPrixCmd();
 
                 }
 
@@ -298,8 +322,123 @@ public class Commande implements Initializable {
         }
 
     }
+    @FXML
+    void rechClientClick(ActionEvent event)
+    {
+        String rech = inputClient.getText().trim();
+        if(rech.equals(""))
+        {
+            listClient = getClients("");
+            ActualiserClient(listClient);
+        }
+        else
+        {
+            if(ChampsIdEstInt(rech))
+            {
+                String rqt = "select cinClient,nom,prenom,tel,mail,adresse from client where etat = 0 and cinClient = "+rech;
+                listClient = getClients(rqt);
+                if(listClient.isEmpty())
+                {
+                    Message("CIN <"+rech+"> n'existe pas !!");
+                    inputClient.setText("");
+                    inputClient.requestFocus();
+                }
+                else
+                {
+                    ActualiserClient(listClient);
+                }
+            }
+            else
+            {
+                String rqt ="select cinClient,nom,prenom,tel,mail,adresse from client where (nom like '"+rech+"%' or prenom like '"+rech+"%' or mail like '"+rech+"%' or adresse like '"+rech+"%') and etat=0";
+                listClient = getClients(rqt);
+                if(listClient.isEmpty())
+                {
+                    Message("<"+rech+"> n'existe pas !");
+                    inputClient.setText("");
+                    inputClient.requestFocus();
+                }
+                else
+                {
+                    ActualiserClient(listClient);
+                }
+            }
+        }
+    }
+    @FXML
+    void rechCmdClick(ActionEvent event)
+    {
+        String rech = inputCMD.getText().trim();
+        String date = dateClick(event);
 
-    //--------------- LIGNE CMD WINDOW ------------------
+        if(rech.equals(""))
+        {
+            if(date.equals(""))
+            {
+                String rqt = "select commande.* , employe.nom from commande,employe where commande.idemp = employe.idemp and commande.etat = 0 " +
+                        "HAVING datecmd like '"+LocalDate.now().format(dateFormatter)+"%'";
+                listCmd = getCommandes(rqt);
+                ActualiserCommande(listCmd);
+                datePicker.setValue(null);
+            }
+            else
+            {
+                String rqt = "select commande.* , employe.nom from commande,employe where commande.idemp = employe.idemp and commande.etat = 0 " +
+                        "HAVING datecmd like '"+date+"%'";
+                listCmd = getCommandes(rqt);
+                ActualiserCommande(listCmd);
+                datePicker.setValue(null);
+            }
+
+        }
+        else
+        {
+            if(ChampsIdEstInt(rech)) //3RAFNA ELI HOA YFARKESS BEL ID
+            {
+                String rqt = "select commande.* , employe.nom from commande,employe where commande.idemp = employe.idemp " +
+                        "HAVING datecmd like '"+date+"%' and ( cinClient like '"+rech+"%' or idcmd like '"+rech+"%')";
+                listCmd = getCommandes(rqt);
+
+                if(listCmd.isEmpty())
+                {
+                    Message("<"+rech+"> n'existe pas !!");
+                    inputCMD.setText("");
+                    inputCMD.requestFocus();
+                }
+                else
+                {
+                    ActualiserCommande(listCmd);
+                    datePicker.setValue(null);
+                }
+            }
+            else
+            {
+                String rqt = "select commande.* , client.nom, employe.nom from commande, client, employe " +
+                        "where commande.cinClient = client.cinClient and date like '"+date+"%' HAVING client.nom like = '"+rech+"%'";
+                listCmd = getCommandes(rqt);
+                if(listCmd.isEmpty())
+                {
+                    Message("<"+rech+"> n'existe pas !!");
+                    inputCMD.setText("");
+                    inputCMD.requestFocus();
+                }
+                else
+                {
+                    ActualiserCommande(listCmd);
+                    datePicker.setValue(null);
+                }
+            }
+        }
+    }
+
+    @FXML
+    void ImprimerCmdClick(ActionEvent event)
+    {
+
+    }
+    //--------------------------------------------------------------------------------------------------
+
+    //------------------------ LIGNE CMD WINDOW ------------------
     public void LigneCmdWindow(int idcmd, ActionEvent event) throws IOException
     {
         try {
@@ -319,28 +458,17 @@ public class Commande implements Initializable {
         }
     }
 
-    @FXML
-    void ModifierCmdClick(ActionEvent event) {
 
-    }
 
     @FXML
-    void ModifierLcClick(ActionEvent event) {
-
-    }
-
-    @FXML
-    void SuppCmdClick(ActionEvent event) {
-
-    }
-
-    @FXML
-    void backClick(ActionEvent event) {
+    void backClick(ActionEvent event)
+    {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("intervendeur.fxml"));
             root = loader.load();
             InterVendeur interVendeur = loader.getController();
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            interVendeur.countNb();
             stage.close();
             scene = new Scene(root);
             stage.setScene(scene);
@@ -351,20 +479,31 @@ public class Commande implements Initializable {
         }
     }
 
-
-
     @FXML
-    void dateClick(ActionEvent event) {
-
+    String dateClick(ActionEvent event)
+    {
+        try {
+            return datePicker.getValue().format(dateFormatter);
+        }
+        catch (Exception e)
+        {
+            return "";
+        }
     }
-
     @FXML
-    void decClick(ActionEvent event) {
-
+    String decClick(ActionEvent event)
+    {
+        try {
+            return datePicker.getValue().format(dateFormatter);
+        }
+        catch (Exception e)
+        {
+            return "";
+        }
     }
-
     @FXML
-    void ligneClientClick(MouseEvent event) {
+    void ligneClientClick(MouseEvent event)
+    {
         try {
             Clnt clnt = tableClient.getSelectionModel().getSelectedItem();
             client.setText(clnt.getNom());
@@ -374,19 +513,30 @@ public class Commande implements Initializable {
         }
     }
     @FXML
-    void lignecmdClick(MouseEvent event) {
+    void lignecmdClick(MouseEvent event)
+    {
+        try {
+            ResultSet rs ;
+            Cmd cmd = tableCMD.getSelectionModel().getSelectedItem();
+            pst1 = con.prepareStatement("select nom from client where cinClient = "+ cmd.getCinClient());
+            rs = pst1.executeQuery();
+            while (rs.next())
+            {
+                client.setText(rs.getString("nom"));
+            }
+
+        }catch (NullPointerException e)
+        {
+            Message("Aucune ligne n'est sélectionnée");
+        }
+        catch(SQLException e)
+        {
+            e.printStackTrace();
+        }
 
     }
 
-    @FXML
-    void rechClientClick(ActionEvent event) {
 
-    }
-
-    @FXML
-    void rechCmdClick(ActionEvent event) {
-
-    }
 
     @FXML
     void viderClick(ActionEvent event) {
@@ -416,5 +566,41 @@ public class Commande implements Initializable {
 
     public void setIdemp(String idemp) {
         this.idemp = idemp;
+    }
+
+    //----------------------------id chiffres-----------------------------
+    public boolean ChampsIdEstInt(String champsId)
+    {
+        boolean b  ;
+        try
+        {
+            Integer.parseInt(champsId);
+            b = true;
+        }
+        catch(NumberFormatException e)
+        {
+            b = false;
+        }
+        return b;
+    }
+
+    public void printSumPrixCmd()
+    {
+        try
+        {
+            ResultSet rs ;
+            pst = con.prepareStatement("select sum(montantTot) from commande where datecmd like '"+LocalDate.now().format(dateFormatter)+"%' and idemp = "+getIdemp());
+            rs = pst.executeQuery();
+
+            while (rs.next())
+            {
+                mntTot.setText(Double.parseDouble(new DecimalFormat("#####.####").format(rs.getDouble("sum(montantTot)"))
+                        .replace(',' , '.'))+" DT");
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 }

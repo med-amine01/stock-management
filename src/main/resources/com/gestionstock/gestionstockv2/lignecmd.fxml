@@ -14,8 +14,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0"
-            prefWidth="1200.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gestionstock.gestionstockv2.Lignecmd">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="700.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gestionstock.gestionstockv2.Lignecmd">
     <right>
         <AnchorPane prefHeight="700.0" prefWidth="750.0" BorderPane.alignment="CENTER">
             <children>
@@ -76,8 +76,6 @@
                         </Label>
                     </children>
                 </VBox>
-                <Button layoutX="12.0" layoutY="14.0" mnemonicParsing="false" onAction="#backClick" prefHeight="24.0" prefWidth="35.0" />
-                <FontAwesomeIconView disable="true" glyphName="ARROW_LEFT" layoutX="22.0" layoutY="31.0" size="15" wrappingWidth="18.142857551574707" />
                 <Button layoutX="395.0" layoutY="14.0" mnemonicParsing="false" onAction="#viderClick" prefHeight="24.0" prefWidth="35.0" />
                 <FontAwesomeIconView disable="true" glyphName="REMOVE" layoutX="406.0" layoutY="31.0" size="15" wrappingWidth="12.142857551574707" />
                 <VBox layoutX="131.0" layoutY="86.0" prefHeight="113.0" prefWidth="297.0" spacing="40.0">

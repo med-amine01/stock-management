@@ -417,7 +417,8 @@ public class Entree implements Initializable {
     }
 
     @FXML
-    void backClick(ActionEvent event) {
+    void backClick(ActionEvent event)
+    {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("interstock.fxml"));
             root = loader.load();
@@ -506,6 +507,7 @@ public class Entree implements Initializable {
                         "HAVING date like '"+LocalDate.now().format(dateFormatter)+"%'";
                 listEntree = getEntree(rqt);
                 ActualiserEntree(listEntree);
+                datePicker.setValue(null);
             }
             else
             {
@@ -513,6 +515,7 @@ public class Entree implements Initializable {
                         "HAVING date like '"+date+"%'";
                 listEntree = getEntree(rqt);
                 ActualiserEntree(listEntree);
+                datePicker.setValue(null);
             }
 
         }
@@ -533,12 +536,13 @@ public class Entree implements Initializable {
                 else
                 {
                     ActualiserEntree(listEntree);
+                    datePicker.setValue(null);
                 }
             }
             else
             {
                 String rqt = "select entree.* , fournisseur.nom from entree, fournisseur " +
-                "where entree.idfour = fournisseur.idfour and date like '"+date+"%' and entree.etat = 0 HAVING nom ="+rech;
+                "where entree.idfour = fournisseur.idfour and date like '"+date+"%' and entree.etat = 0 HAVING nom like '"+rech+"%'";
                 listEntree = getEntree(rqt);
                 if(listEntree.isEmpty())
                 {
@@ -549,6 +553,7 @@ public class Entree implements Initializable {
                 else
                 {
                     ActualiserEntree(listEntree);
+                    datePicker.setValue(null);
                 }
             }
         }
