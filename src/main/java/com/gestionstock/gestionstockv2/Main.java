@@ -8,7 +8,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class Main extends Application {
-
     @Override
     public void start(Stage stage) throws IOException {
 
@@ -19,9 +18,9 @@ public class Main extends Application {
         stage.show();
     }
 
+    public static void main(String[] args)  {launch();}
 
-    public static void main(String[] args)  {
-
-        launch();
-    }
+    //-------- TRAVAIL DÉVELOPPÉ PAR ----------- :
+    // CHEBBI MOHAMED AMINE : camine500@gmail.com
+    //EYA BOUAJILA : ebouajila20001304@gmail.com
 }

@@ -7,13 +7,15 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0"
-            xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gestionstock.gestionstockv2.Client">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0"
+            prefWidth="1200.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.gestionstock.gestionstockv2.Client">
     <left>
         <AnchorPane prefHeight="700.0" prefWidth="450.0" style="-fx-background-color: #054468;" BorderPane.alignment="CENTER">
             <children>
@@ -61,13 +63,28 @@
                   <TextField fx:id="mailClient" layoutX="10.0" layoutY="10.0" prefHeight="35.0" prefWidth="281.0" promptText="nom@domain.ext" />
                     </children>
                 </VBox>
-                <Button layoutX="311.0" layoutY="515.0" mnemonicParsing="false" onAction="#ajoutClick" prefHeight="36.0" prefWidth="125.0" style="-fx-border-color: #43A047; -fx-border-width: 1.5px 1.5px 1.5px 1.5px;" text="AJOUTER" />
-                <Button layoutX="15.0" layoutY="515.0" mnemonicParsing="false" onAction="#suppClick" prefHeight="36.0" prefWidth="125.0" style="-fx-border-color: #FE0101;" text="SUPPRIMER" />
-                <Button layoutX="163.0" layoutY="515.0" mnemonicParsing="false" onAction="#modClick" prefHeight="36.0" prefWidth="125.0" style="-fx-border-color: #FEAA01; -fx-border-width: 1.5px 1.5px 1.5px 1.5px;" text="MODIFIER" />
                 <Button fx:id="backBtn" layoutX="12.0" layoutY="14.0" mnemonicParsing="false" onAction="#backClick" prefHeight="24.0" prefWidth="35.0" />
                 <FontAwesomeIconView disable="true" glyphName="ARROW_LEFT" layoutX="22.0" layoutY="31.0" size="15" wrappingWidth="18.142857551574707" />
                 <Button layoutX="398.0" layoutY="13.0" mnemonicParsing="false" onAction="#viderClick" prefHeight="24.0" prefWidth="35.0" />
                 <FontAwesomeIconView disable="true" glyphName="REMOVE" layoutX="409.0" layoutY="32.0" size="16" text="" />
+            <Button layoutX="364.0" layoutY="471.0" mnemonicParsing="false" onAction="#ajoutClick" prefHeight="55.0" prefWidth="60.0" style="-fx-background-color: TRANSPARENT;" />
+            <ImageView disable="true" fitHeight="55.0" fitWidth="60.0" layoutX="364.0" layoutY="471.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../icons/add.png" />
+               </image>
+            </ImageView>
+            <Button layoutX="192.0" layoutY="471.0" mnemonicParsing="false" onAction="#modClick" prefHeight="55.0" prefWidth="60.0" style="-fx-background-color: TRANSPARENT;" />
+            <ImageView disable="true" fitHeight="55.0" fitWidth="60.0" layoutX="192.0" layoutY="471.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../icons/reload.png" />
+               </image>
+            </ImageView>
+            <Button layoutX="27.0" layoutY="471.0" mnemonicParsing="false" onAction="#suppClick" prefHeight="55.0" prefWidth="60.0" style="-fx-background-color: TRANSPARENT;" />
+            <ImageView disable="true" fitHeight="55.0" fitWidth="60.0" layoutX="27.0" layoutY="471.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../icons/remove.png" />
+               </image>
+            </ImageView>
             </children>
         </AnchorPane>
     </left>

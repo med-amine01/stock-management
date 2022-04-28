@@ -41,7 +41,6 @@ public class InterVendeur implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         connect();
 
-
     }
 
     //-------------------- Connection à la base de donnée -----------------------
@@ -89,6 +88,7 @@ public class InterVendeur implements Initializable {
         Commande commande = loader.getController();
         commande.PrintUserName(user.getText());
         commande.setIdemp(getIdemp());
+
         commande.printSumPrixCmd();
         stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
         stage.close();
@@ -153,34 +153,6 @@ public class InterVendeur implements Initializable {
         sortieDate.setText(LocalDate.now().format(dateFormatter));
     }
 
-    public void OuvrirCaisse()
-    {
-        try {
-            //pst = con.prepareStatement("insert into sortie (idemp, date, montant) values (?,?,?)");
-            String idsortie = "";
-            ResultSet rs;
-            pst = con.prepareStatement("select * from sortie");
-            rs = pst.executeQuery();
-            System.out.println("id emp fi session " + getIdemp());
-            while (rs.next())
-            {
-                if(rs.getString("idemp").equals(getIdemp()) && rs.getString("date").equals(LocalDate.now().format(dateFormatter)))
-                {
-                    //update
-                    idsortie = rs.getString("idsortie");
-                }
-                if(!rs.getString("idemp").equals(getIdemp()) ^ !rs.getString("date").equals(LocalDate.now().format(dateFormatter)))
-                {
-                    // F F  = true
-                    //T T  = true
-                }
-            }
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-    }
 
 
     //--------------------- set user name (passage entre les controlleurs) -------------------

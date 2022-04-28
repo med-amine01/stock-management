@@ -41,11 +41,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-
 public class Commande implements Initializable {
 
 
@@ -485,35 +480,35 @@ public class Commande implements Initializable {
 
             float [] columnWidthHeader  = {520f};
             Table headerTable = new Table(columnWidthHeader);
-            headerTable.setBackgroundColor(new DeviceRgb(200,200,200)).setFontColor(Color.WHITE);
+            headerTable.setBackgroundColor(new DeviceRgb(0 ,5,68)).setFontColor(Color.WHITE);
+
             headerTable.addCell(new Cell().add("GESTION DE STOCK"))
                     .setTextAlignment(TextAlignment.CENTER)
                     .setVerticalAlignment(VerticalAlignment.MIDDLE)
                     .setMarginTop(30f)
                     .setMarginBottom(30f)
-                    .setFontSize(30f);
+                    .setFontSize(30f)
+                    .setBorder(Border.NO_BORDER);
 
 
             float [] columnWidthInformation  = {260f,260f};
             Table InformationTable = new Table(columnWidthInformation);
-            InformationTable.addCell(new Cell().add("Vendeur")).setBorder(Border.NO_BORDER);
-            InformationTable.addCell(new Cell().add("Client")).setBorder(Border.NO_BORDER);
 
             try
             {
                 ResultSet rs1 ;
                 pst = con.prepareStatement("select employe.nom , commande.datecmd, commande.idcmd, commande.cinClient, client.nom, client.tel from employe, commande, client " +
-                        "where commande.idemp = employe.idemp and commande.cinClient = client.cinClient and idcmd =  "+cmd.getIdcmd());
+                        "where commande.idemp = employe.idemp and commande.cinClient = client.cinClient and idcmd = "+cmd.getIdcmd());
                 rs1 = pst.executeQuery();
 
                 while (rs1.next())
                 {
-                    InformationTable.addCell(new Cell().add(rs1.getString("nom"))).setBorder(Border.NO_BORDER);
-                    InformationTable.addCell(new Cell().add(rs1.getString("cinClient"))).setBorder(Border.NO_BORDER);
-                    InformationTable.addCell(new Cell().add(rs1.getString("datecmd"))).setBorder(Border.NO_BORDER);
-                    InformationTable.addCell(new Cell().add(rs1.getString("nom"))).setBorder(Border.NO_BORDER);
-                    InformationTable.addCell(new Cell().add(rs1.getString("idcmd"))).setBorder(Border.NO_BORDER);
-                    InformationTable.addCell(new Cell().add(rs1.getString("tel"))).setBorder(Border.NO_BORDER);
+                    InformationTable.addCell(new Cell().add("VENDEUR : "+rs1.getString("nom")).setBorder(Border.NO_BORDER));
+                    InformationTable.addCell(new Cell().add("CIN : " +rs1.getString("cinClient")).setTextAlignment(TextAlignment.RIGHT).setBorder(Border.NO_BORDER));
+                    InformationTable.addCell(new Cell().add("DATE : "+rs1.getString("datecmd")).setBorder(Border.NO_BORDER));
+                    InformationTable.addCell(new Cell().add("CLIENT : "+rs1.getString("nom")).setTextAlignment(TextAlignment.RIGHT).setBorder(Border.NO_BORDER));
+                    InformationTable.addCell(new Cell().add("REF COMMANDE : "+rs1.getString("idcmd")).setBorder(Border.NO_BORDER));
+                    InformationTable.addCell(new Cell().add("TÉLEPHONE : "+rs1.getString("tel")).setTextAlignment(TextAlignment.RIGHT).setBorder(Border.NO_BORDER));
                 }
 
             }
@@ -526,16 +521,16 @@ public class Commande implements Initializable {
 
             float [] columnWidth  = {200f, 100f, 100f, 120f};
             Table table = new Table(columnWidth);
-            table.addCell(new Cell().add("Nom Pièce"));
-            table.addCell(new Cell().add("Quantité"));
-            table.addCell(new Cell().add("Prix Unitaire"));
-            table.addCell(new Cell().add("Montant"));
+            table.addCell(new Cell().add("Nom Pièce").setBackgroundColor(new DeviceRgb(0 ,5,68)).setFontColor(Color.WHITE));
+            table.addCell(new Cell().add("Quantité").setBackgroundColor(new DeviceRgb(0 ,5,68)).setFontColor(Color.WHITE));
+            table.addCell(new Cell().add("Prix Unitaire").setBackgroundColor(new DeviceRgb(0 ,5,68)).setFontColor(Color.WHITE));
+            table.addCell(new Cell().add("Montant").setBackgroundColor(new DeviceRgb(0 ,5,68)).setFontColor(Color.WHITE));
 
             float [] columnWidthMnt = {100f};
             Table tableMnt = new Table(columnWidthMnt);
 
 
-            tableMnt.addCell(new Cell().add("Montant Total"))
+            tableMnt.addCell(new Cell().add("Montant Total").setBackgroundColor(new DeviceRgb(0 ,5,68)).setFontColor(Color.WHITE))
                     .setHorizontalAlignment(HorizontalAlignment.RIGHT)
                     .setVerticalAlignment(VerticalAlignment.BOTTOM);
 
@@ -561,13 +556,18 @@ public class Commande implements Initializable {
                 e.printStackTrace();
             }
 
-            document.add(headerTable.setBorder(Border.NO_BORDER));
+            document.add(headerTable);
             document.add(new Paragraph("\n\n"));
             document.add(InformationTable);
             document.add(new Paragraph("\n\n"));
-            document.add(table.setBorder(Border.NO_BORDER));
+            document.add(table);
             document.add(new Paragraph("\n\n"));
             document.add(tableMnt);
+
+            document.add(new Paragraph("MERCI À BIENTÔT")
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setVerticalAlignment(VerticalAlignment.MIDDLE)
+                    .setMarginTop(280f));
 
 
             document.close();
@@ -577,7 +577,7 @@ public class Commande implements Initializable {
     }
     //--------------------------------------------------------------------------------------------------
 
-    //------------------------ LIGNE CMD WINDOW ------------------
+    //--------------------------------- LIGNE CMD WINDOW ---------------------------------
     public void LigneCmdWindow(int idcmd, ActionEvent event) throws IOException
     {
         try {
@@ -608,6 +608,7 @@ public class Commande implements Initializable {
             InterVendeur interVendeur = loader.getController();
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
             interVendeur.countNb();
+            interVendeur.PrintUserName(user.getText());
             stage.close();
             scene = new Scene(root);
             stage.setScene(scene);
@@ -630,14 +631,18 @@ public class Commande implements Initializable {
         }
     }
     @FXML
-    String decClick(ActionEvent event)
+    void decClick(ActionEvent event)
     {
         try {
-            return datePicker.getValue().format(dateFormatter);
-        }
-        catch (Exception e)
-        {
-            return "";
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
+            root = loader.load();
+            stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+
+        }catch (IOException e) {
+            e.printStackTrace();
         }
     }
     @FXML

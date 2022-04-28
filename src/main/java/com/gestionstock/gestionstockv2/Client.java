@@ -144,10 +144,10 @@ public class Client implements Initializable {
 
 
 
-
     //------------------------ CRUD CLIENT ----------------------------
     @FXML
-    void ajoutClick(ActionEvent event) {
+    void ajoutClick(ActionEvent event)
+    {
         String cin,nom,prenom,adresse,mail,numtel;
         cin = CIN.getText().trim();
         nom = nomClient.getText().trim();
@@ -179,14 +179,6 @@ public class Client implements Initializable {
                 }
                 else
                 {
-                    if(!valideMail(mail))
-                    {
-                        Message("mail invalide");
-                        mailClient.setText("");
-                        mailClient.requestFocus();
-                    }
-                    else
-                    {
                         try
                         {
                             pst = con.prepareStatement("insert into client (cinClient,nom,prenom,tel,mail,adresse,etat) values (?,?,?,?,?,?,?)");
@@ -200,7 +192,16 @@ public class Client implements Initializable {
                             }
                             else
                             {
-                                pst.setString(5, mail.replace(" ",""));
+                                if(!valideMail(mail))
+                                {
+                                    Message("mail invalide");
+                                    mailClient.setText("");
+                                    mailClient.requestFocus();
+                                }
+                                else
+                                {
+                                    pst.setString(5, mail.replace(" ",""));
+                                }
                             }
                             pst.setString(6, adresse);
                             pst.setString(7, "0");
@@ -212,14 +213,45 @@ public class Client implements Initializable {
                         }
                         catch (SQLIntegrityConstraintViolationException e)
                         {
-                            Message("Le client déjà existe !");
-                            viderClick(event);
+                            try
+                            {
+                                ResultSet rs22;
+                                pst = con.prepareStatement("select etat from client where cinClient = "+cin);
+                                rs22 = pst.executeQuery();
+                                while (rs22.next())
+                                {
+                                    if(rs22.getString("etat").equals("1"))
+                                    {
+                                        pst1 = con.prepareStatement("update client set etat = ? where cinClient = ? ");
+
+                                        pst1.setString(1, "0");
+                                        pst1.setString(2, cin);
+
+                                        pst1.executeUpdate();
+                                        Message("Client ajouté (le client restoré) !!");
+                                        viderClick(event);
+                                        list = getClients("");
+                                        Actualiser(list);
+                                        inputClient.requestFocus();
+                                    }
+                                    else
+                                    {
+                                        Message("Le client déjà existe !");
+                                        viderClick(event);
+                                    }
+                                }
+                            }
+                            catch (SQLException e1)
+                            {
+                                e1.printStackTrace();
+                            }
+
                         }
                         catch (SQLException e1)
                         {
                             e1.printStackTrace();
                         }
-                    }
+
                 }
             }
 
@@ -272,10 +304,19 @@ public class Client implements Initializable {
                         if (mail.equals(""))
                         {
                             pst.setString(5, "-");
+                            pst.setString(6, adresse);
+                            pst.setString(7, client.getCinClient()); // cin 9dima avant modification
+                            pst.executeUpdate();
+                            Message("client Modifié !!");
+                            viderClick(event);
+                            list = getClients("");
+                            Actualiser(list);
+                            inputClient.requestFocus();
                         }
                         else
                         {
-                            if (!valideMail(mail)) {
+                            if (!valideMail(mail))
+                            {
                                 Message("mail invalide");
                                 mailClient.setText("");
                                 mailClient.requestFocus();
@@ -283,17 +324,16 @@ public class Client implements Initializable {
                             else
                             {
                                 pst.setString(5, mail.replace(" ",""));
+                                pst.setString(6, adresse);
+                                pst.setString(7, client.getCinClient()); // cin 9dima avant modification
+                                pst.executeUpdate();
+                                Message("client Modifié !!");
+                                viderClick(event);
+                                list = getClients("");
+                                Actualiser(list);
+                                inputClient.requestFocus();
                             }
                         }
-                        pst.setString(6, adresse);
-                        pst.setString(7, client.getCinClient()); // cin 9dima avant modification
-                        pst.executeUpdate();
-                        Message("client Modifié !!");
-                        viderClick(event);
-                        list = getClients("");
-                        Actualiser(list);
-                        inputClient.requestFocus();
-
                     }
                     catch (SQLIntegrityConstraintViolationException e)
                     {
@@ -322,7 +362,7 @@ public class Client implements Initializable {
         {
             try
             {
-                pst1 = con.prepareStatement("select idclient, nom,prenom, tel, mail, adresse from client where cinClient = "+client.getCinClient()+";");
+                pst1 = con.prepareStatement("select Cinclient, nom,prenom, tel, mail, adresse from client where cinClient = "+client.getCinClient()+";");
                 ResultSet rs1 = pst1.executeQuery();
 
                 while(rs1.next())
@@ -344,6 +384,7 @@ public class Client implements Initializable {
                             Actualiser(list);
                             inputClient.setText("");
                             inputClient.requestFocus();
+                            viderClick(event);
                         }
                         catch (SQLException e1)
                         {
@@ -441,6 +482,7 @@ public class Client implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("intervendeur.fxml"));
             root = loader.load();
             InterVendeur interVendeur = loader.getController();
+            interVendeur.PrintUserName(user.getText());
             interVendeur.countNb();
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
             scene = new Scene(root);
@@ -555,6 +597,7 @@ public class Client implements Initializable {
         }
         return true ;
     }
+
     //--------------------- set user name (passage entre les controlleurs) -------------------
     public void PrintUserName(String CurrentUserName)
     {

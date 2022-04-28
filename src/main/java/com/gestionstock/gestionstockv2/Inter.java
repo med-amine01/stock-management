@@ -20,6 +20,8 @@ public class Inter {
     private Scene scene;
     private Parent root;
 
+    private static String idemp;
+
 
     @FXML
     void empClick(ActionEvent event)  {
@@ -109,6 +111,8 @@ public class Inter {
             root = loader.load();
             Sortie sortie = loader.getController();
             sortie.PrintUserName(user.getText());
+
+            sortie.printSumPrixCmd();
             stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
             stage.close();
             scene = new Scene(root);
@@ -139,7 +143,13 @@ public class Inter {
     }
 
 
+    public static String getIdemp() {
+        return idemp;
+    }
 
+    public void setIdemp(String idemp) {
+        Inter.idemp = idemp;
+    }
 
 
     public void PrintAdminName(String CurrentUserName)

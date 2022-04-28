@@ -19,6 +19,15 @@ public class Cmd {
     }
 
 
+    public Cmd(int idcmd, int idemp, String datecmd, double montant, String etatcmd) {
+        this.idcmd = idcmd;
+        this.idemp = idemp;
+        this.datecmd = datecmd;
+        this.montant = montant;
+        this.etatcmd = etatcmd;
+    }
+
+
     public String getCinClient() {
         return cinClient;
     }

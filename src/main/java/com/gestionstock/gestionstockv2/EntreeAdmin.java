@@ -445,6 +445,10 @@ public class EntreeAdmin implements Initializable {
                     pst1.execute();
                 }
             }
+            listEntree = getEntree("");
+            ActualiserEntree(listEntree);
+            listPiece = getPieces("");
+            ActualiserPiece(listPiece);
         }
         catch (SQLException e)
         {
