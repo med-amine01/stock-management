@@ -11,6 +11,8 @@ module com.gestionstock.gestionstockv2 {
     requires eu.hansolo.tilesfx;
     requires java.sql;
     requires mysql.connector.java;
+    requires kernel;
+    requires layout;
 
     opens com.gestionstock.gestionstockv2 to javafx.fxml;
     exports com.gestionstock.gestionstockv2;

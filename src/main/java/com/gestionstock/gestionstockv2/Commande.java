@@ -2,6 +2,19 @@ package com.gestionstock.gestionstockv2;
 
 import Classes.Clnt;
 import Classes.Cmd;
+import com.itextpdf.kernel.color.Color;
+import com.itextpdf.kernel.color.DeviceRgb;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.border.Border;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.property.HorizontalAlignment;
+import com.itextpdf.layout.property.TextAlignment;
+import com.itextpdf.layout.property.VerticalAlignment;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -17,6 +30,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
@@ -26,6 +40,11 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
+
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
 
 public class Commande implements Initializable {
 
@@ -443,8 +462,116 @@ public class Commande implements Initializable {
     }
 
     @FXML
-    void ImprimerCmdClick(ActionEvent event)
+    void ImprimerCmdClick(ActionEvent event) throws FileNotFoundException
     {
+        Cmd cmd = tableCMD.getSelectionModel().getSelectedItem();
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setHeaderText("Imprimer La Facture !");
+        alert.setContentText("Vous allez Imprimer La facture de cette commande ? \nVoulez-vous poursuivre ?\n Commande : <"+cmd.getIdcmd()+">");
+
+        Optional<ButtonType> r = alert.showAndWait();
+        if (r.get() == ButtonType.OK)
+        {
+
+            String path = "/home/madchicken/facture/"+ cmd.getCinClient() +"__"+ String.valueOf(cmd.getIdcmd()).concat(".pdf");
+
+            PdfWriter pdfWriter = new PdfWriter(path);
+
+            PdfDocument pdfDocument = new PdfDocument(pdfWriter);
+            pdfDocument.addNewPage();
+            Document document = new Document(pdfDocument);
+            pdfDocument.setDefaultPageSize(PageSize.A4);
+
+
+            float [] columnWidthHeader  = {520f};
+            Table headerTable = new Table(columnWidthHeader);
+            headerTable.setBackgroundColor(new DeviceRgb(200,200,200)).setFontColor(Color.WHITE);
+            headerTable.addCell(new Cell().add("GESTION DE STOCK"))
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setVerticalAlignment(VerticalAlignment.MIDDLE)
+                    .setMarginTop(30f)
+                    .setMarginBottom(30f)
+                    .setFontSize(30f);
+
+
+            float [] columnWidthInformation  = {260f,260f};
+            Table InformationTable = new Table(columnWidthInformation);
+            InformationTable.addCell(new Cell().add("Vendeur")).setBorder(Border.NO_BORDER);
+            InformationTable.addCell(new Cell().add("Client")).setBorder(Border.NO_BORDER);
+
+            try
+            {
+                ResultSet rs1 ;
+                pst = con.prepareStatement("select employe.nom , commande.datecmd, commande.idcmd, commande.cinClient, client.nom, client.tel from employe, commande, client " +
+                        "where commande.idemp = employe.idemp and commande.cinClient = client.cinClient and idcmd =  "+cmd.getIdcmd());
+                rs1 = pst.executeQuery();
+
+                while (rs1.next())
+                {
+                    InformationTable.addCell(new Cell().add(rs1.getString("nom"))).setBorder(Border.NO_BORDER);
+                    InformationTable.addCell(new Cell().add(rs1.getString("cinClient"))).setBorder(Border.NO_BORDER);
+                    InformationTable.addCell(new Cell().add(rs1.getString("datecmd"))).setBorder(Border.NO_BORDER);
+                    InformationTable.addCell(new Cell().add(rs1.getString("nom"))).setBorder(Border.NO_BORDER);
+                    InformationTable.addCell(new Cell().add(rs1.getString("idcmd"))).setBorder(Border.NO_BORDER);
+                    InformationTable.addCell(new Cell().add(rs1.getString("tel"))).setBorder(Border.NO_BORDER);
+                }
+
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+
+
+
+            float [] columnWidth  = {200f, 100f, 100f, 120f};
+            Table table = new Table(columnWidth);
+            table.addCell(new Cell().add("Nom Pièce"));
+            table.addCell(new Cell().add("Quantité"));
+            table.addCell(new Cell().add("Prix Unitaire"));
+            table.addCell(new Cell().add("Montant"));
+
+            float [] columnWidthMnt = {100f};
+            Table tableMnt = new Table(columnWidthMnt);
+
+
+            tableMnt.addCell(new Cell().add("Montant Total"))
+                    .setHorizontalAlignment(HorizontalAlignment.RIGHT)
+                    .setVerticalAlignment(VerticalAlignment.BOTTOM);
+
+            try
+            {
+                ResultSet rs ;
+                pst = con.prepareStatement("select piece.marque, lignecmd.qtelc, piece.prixunitaire, lignecmd.prixlc from piece, lignecmd " +
+                        "where lignecmd.idpiece = piece.idpiece and lignecmd.idcmd =  "+cmd.getIdcmd());
+                rs = pst.executeQuery();
+
+                while (rs.next())
+                {
+                    table.addCell(new Cell().add(rs.getString("marque")));
+                    table.addCell(new Cell().add(rs.getString("qtelc")));
+                    table.addCell(new Cell().add(rs.getString("prixunitaire")));
+                    table.addCell(new Cell().add(rs.getString("prixlc")));
+                }
+
+                tableMnt.addCell(new Cell().add(String.valueOf(cmd.getMontant())));
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+
+            document.add(headerTable.setBorder(Border.NO_BORDER));
+            document.add(new Paragraph("\n\n"));
+            document.add(InformationTable);
+            document.add(new Paragraph("\n\n"));
+            document.add(table.setBorder(Border.NO_BORDER));
+            document.add(new Paragraph("\n\n"));
+            document.add(tableMnt);
+
+
+            document.close();
+        }
 
 
     }
