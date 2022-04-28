@@ -95,7 +95,6 @@ public class Piece implements Initializable {
         }
     }
 
-
     //---------------------- chargement du tableau dans une liste (Search)-----------------------------
     public ObservableList<Pie> getPieces(String sqlSearch)
     {
@@ -511,8 +510,6 @@ public class Piece implements Initializable {
         idfourp.getSelectionModel().select(-1);
         inputpiece.setText("");
     }
-
-
 
 
 

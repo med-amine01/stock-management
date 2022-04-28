@@ -9,7 +9,7 @@ public class Pie {
     private double prix;
     private int idfour;
     private String etat;
-    private int qteeffective;
+    private String nom;
 
 
     public Pie(int idpiece, String marque, String modele, String serie, int qte, double prix,int idfour,String etat)
@@ -24,7 +24,7 @@ public class Pie {
         this.etat = etat;
     }
 
-    public Pie(int idpiece, String marque, String modele, String serie, int qte, double prix,int idfour,String etat,int qteeffective)
+    public Pie(int idpiece, String marque, String modele, String serie, int qte, double prix,String nom,String etat)
     {
         this.idpiece = idpiece;
         this.marque = marque;
@@ -32,18 +32,17 @@ public class Pie {
         this.serie = serie;
         this.qte = qte;
         this.prix = prix;
-        this.idfour = idfour;
+        this.nom = nom;
         this.etat = etat;
-        this.qteeffective = qteeffective;
     }
 
 
-    public int getQteeffective() {
-        return qteeffective;
+    public String getNom() {
+        return nom;
     }
 
-    public void setQteeffective(int qteeffective) {
-        this.qteeffective = qteeffective;
+    public void setNom(String nom) {
+        this.nom = nom;
     }
 
     public int getIdpiece() {

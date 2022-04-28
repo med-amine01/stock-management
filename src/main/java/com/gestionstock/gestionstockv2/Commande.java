@@ -375,11 +375,22 @@ public class Commande implements Initializable {
         {
             if(date.equals(""))
             {
-                String rqt = "select commande.* , employe.nom from commande,employe where commande.idemp = employe.idemp and commande.etat = 0 " +
-                        "HAVING datecmd like '"+LocalDate.now().format(dateFormatter)+"%'";
-                listCmd = getCommandes(rqt);
-                ActualiserCommande(listCmd);
-                datePicker.setValue(null);
+                if(cbCMD.isSelected())
+                {
+                    String rqt = "select commande.* , employe.nom from commande,employe where commande.idemp = employe.idemp and commande.etatcmd ='Passer'" +
+                            "HAVING datecmd like '"+LocalDate.now().format(dateFormatter)+"%' ";
+                    listCmd = getCommandes(rqt);
+                    ActualiserCommande(listCmd);
+                    datePicker.setValue(null);
+                }
+                else
+                {
+                    String rqt = "select commande.* , employe.nom from commande,employe where commande.idemp = employe.idemp " +
+                            "HAVING datecmd like '"+LocalDate.now().format(dateFormatter)+"%' ";
+                    listCmd = getCommandes(rqt);
+                    ActualiserCommande(listCmd);
+                    datePicker.setValue(null);
+                }
             }
             else
             {
@@ -434,6 +445,7 @@ public class Commande implements Initializable {
     @FXML
     void ImprimerCmdClick(ActionEvent event)
     {
+
 
     }
     //--------------------------------------------------------------------------------------------------
@@ -588,15 +600,18 @@ public class Commande implements Initializable {
     {
         try
         {
+            //select idemp,sum(montantTot) from commande GROUP By idemp;
+            double mnt = 0.0;
             ResultSet rs ;
             pst = con.prepareStatement("select sum(montantTot) from commande where datecmd like '"+LocalDate.now().format(dateFormatter)+"%' and idemp = "+getIdemp());
             rs = pst.executeQuery();
-
             while (rs.next())
             {
-                mntTot.setText(Double.parseDouble(new DecimalFormat("#####.####").format(rs.getDouble("sum(montantTot)"))
-                        .replace(',' , '.'))+" DT");
+                mnt = rs.getDouble("sum(montantTot)");
             }
+
+            mntTot.setText(Double.parseDouble(new DecimalFormat("#####.####").format(mnt).replace(',' , '.'))+" DT");
+
         }
         catch (SQLException e)
         {

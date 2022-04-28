@@ -262,7 +262,7 @@ public class Entree implements Initializable {
         tableEntree.setItems(list);
     }
 
-    //------------------ AJOUT ENTREE ----------------------------
+    //------------------ CRUD ENTREE ----------------------------
     @FXML
     void ajoutClick(ActionEvent event)
     {
@@ -352,6 +352,74 @@ public class Entree implements Initializable {
         }
 
     }
+    @FXML
+    void rechEntreeClick(ActionEvent event)
+    {
+        String rech = inputEntree.getText().trim();
+        String date = dateClick(event);
+        Timer();
+
+        if(rech.equals(""))
+        {
+            if(date.equals(""))
+            {
+                String rqt = "select entree.* , fournisseur.nom from entree,fournisseur where entree.idfour = fournisseur.idfour and entree.etat = 0 " +
+                        "HAVING date like '"+LocalDate.now().format(dateFormatter)+"%'";
+                listEntree = getEntree(rqt);
+                ActualiserEntree(listEntree);
+                datePicker.setValue(null);
+            }
+            else
+            {
+                String rqt = "select entree.* , fournisseur.nom from entree,fournisseur where entree.idfour = fournisseur.idfour and entree.etat = 0 " +
+                        "HAVING date like '"+date+"%'";
+                listEntree = getEntree(rqt);
+                ActualiserEntree(listEntree);
+                datePicker.setValue(null);
+            }
+
+        }
+        else
+        {
+            if(ChampsIdEstInt(rech)) //3RAFNA ELI HOA YFARKESS BEL ID
+            {
+                String rqt = "select entree.* , fournisseur.nom from entree, fournisseur " +
+                        "where entree.idfour = fournisseur.idfour and date like '"+date+"%' and entree.etat = 0 HAVING identree = "+rech+"or idpiece = "+rech;
+                listEntree = getEntree(rqt);
+
+                if(listEntree.isEmpty())
+                {
+                    Message("ID <"+rech+"> n'existe pas !!");
+                    inputEntree.setText("");
+                    inputEntree.requestFocus();
+                }
+                else
+                {
+                    ActualiserEntree(listEntree);
+                    datePicker.setValue(null);
+                }
+            }
+            else
+            {
+                String rqt = "select entree.* , fournisseur.nom from entree, fournisseur " +
+                        "where entree.idfour = fournisseur.idfour and date like '"+date+"%' and entree.etat = 0 HAVING nom like '"+rech+"%'";
+                listEntree = getEntree(rqt);
+                if(listEntree.isEmpty())
+                {
+                    Message("ID <"+rech+"> n'existe pas !!");
+                    inputEntree.setText("");
+                    inputEntree.requestFocus();
+                }
+                else
+                {
+                    ActualiserEntree(listEntree);
+                    datePicker.setValue(null);
+                }
+            }
+        }
+    }
+
+    //---------------------------------------------------------------------
 
 
     //---------------------------- TIMER CONFIRM ----------------------------------
@@ -491,73 +559,6 @@ public class Entree implements Initializable {
 
     }
 
-    //----------------------- RECHERCHE ENTREE ---------------------
-    @FXML
-    void rechEntreeClick(ActionEvent event)
-    {
-        String rech = inputEntree.getText().trim();
-        String date = dateClick(event);
-        Timer();
-
-        if(rech.equals(""))
-        {
-            if(date.equals(""))
-            {
-                String rqt = "select entree.* , fournisseur.nom from entree,fournisseur where entree.idfour = fournisseur.idfour and entree.etat = 0 " +
-                        "HAVING date like '"+LocalDate.now().format(dateFormatter)+"%'";
-                listEntree = getEntree(rqt);
-                ActualiserEntree(listEntree);
-                datePicker.setValue(null);
-            }
-            else
-            {
-                String rqt = "select entree.* , fournisseur.nom from entree,fournisseur where entree.idfour = fournisseur.idfour and entree.etat = 0 " +
-                        "HAVING date like '"+date+"%'";
-                listEntree = getEntree(rqt);
-                ActualiserEntree(listEntree);
-                datePicker.setValue(null);
-            }
-
-        }
-        else
-        {
-            if(ChampsIdEstInt(rech)) //3RAFNA ELI HOA YFARKESS BEL ID
-            {
-                String rqt = "select entree.* , fournisseur.nom from entree, fournisseur " +
-                "where entree.idfour = fournisseur.idfour and date like '"+date+"%' and entree.etat = 0 HAVING identree = "+rech;
-                listEntree = getEntree(rqt);
-
-                if(listEntree.isEmpty())
-                {
-                    Message("ID <"+rech+"> n'existe pas !!");
-                    inputEntree.setText("");
-                    inputEntree.requestFocus();
-                }
-                else
-                {
-                    ActualiserEntree(listEntree);
-                    datePicker.setValue(null);
-                }
-            }
-            else
-            {
-                String rqt = "select entree.* , fournisseur.nom from entree, fournisseur " +
-                "where entree.idfour = fournisseur.idfour and date like '"+date+"%' and entree.etat = 0 HAVING nom like '"+rech+"%'";
-                listEntree = getEntree(rqt);
-                if(listEntree.isEmpty())
-                {
-                    Message("ID <"+rech+"> n'existe pas !!");
-                    inputEntree.setText("");
-                    inputEntree.requestFocus();
-                }
-                else
-                {
-                    ActualiserEntree(listEntree);
-                    datePicker.setValue(null);
-                }
-            }
-        }
-    }
 
     //------------------------ RECHERCHE PIECE -----------------------
     @FXML

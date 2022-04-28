@@ -589,6 +589,7 @@ public class EntreeAdmin implements Initializable {
                     //                                                                                       ==================
                     listEntree = getEntree(rqt);
                     ActualiserEntree(listEntree);
+                    datePicker.setValue(null);
                 }
                 else // non selectionné
                 {
@@ -596,6 +597,7 @@ public class EntreeAdmin implements Initializable {
                             "HAVING date like '"+LocalDate.now().format(dateFormatter)+"%' and confirmEntree = 'NoConfirm'";
                     listEntree = getEntree(rqt);
                     ActualiserEntree(listEntree);
+                    datePicker.setValue(null);
                 }
 
             }
@@ -605,6 +607,7 @@ public class EntreeAdmin implements Initializable {
                         "HAVING date like '"+date+"%'";
                 listEntree = getEntree(rqt);
                 ActualiserEntree(listEntree);
+                datePicker.setValue(null);
 
             }
 
@@ -614,7 +617,7 @@ public class EntreeAdmin implements Initializable {
             if(ChampsIdEstInt(rech)) //3RAFNA ELI HOA YFARKESS BEL ID
             {
                 String rqt = "select entree.* , fournisseur.nom from entree, fournisseur " +
-                        "where entree.idfour = fournisseur.idfour and date like '"+date+"%' and entree.etat = 0 HAVING identree = "+rech;
+                        "where entree.idfour = fournisseur.idfour and date like '"+date+"%' and entree.etat = 0 HAVING identree = "+rech+" or idpiece = "+rech;
                 listEntree = getEntree(rqt);
 
                 if(listEntree.isEmpty())
@@ -626,6 +629,7 @@ public class EntreeAdmin implements Initializable {
                 else
                 {
                     ActualiserEntree(listEntree);
+                    datePicker.setValue(null);
                 }
             }
             else
@@ -642,6 +646,7 @@ public class EntreeAdmin implements Initializable {
                 else
                 {
                     ActualiserEntree(listEntree);
+                    datePicker.setValue(null);
                 }
             }
         }
